@@ -1,0 +1,52 @@
+/* Enable dark mode */
+html {
+    color-scheme: light dark;
+
+    background-color: Canvas;
+    color: CanvasText
+}
+
+body {
+    /* Set line height to 1.5 times the font size and use the OS's UI font as the website font (from lab)*/
+    font: 100%/1.6 system-ui;
+    max-width: 85ch;
+    margin-inline: auto;
+    padding: 2rem 1.25rem;
+}
+
+h1 {
+    margin-bottom: 1em;
+}
+
+/* Title block layout */
+.title-block {
+    margin-bottom: 2rem;
+}
+
+/* Main title styling */
+.main-title {
+    font-size: 2rem;
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+/* Subtitle (already added but enhanced) */
+.subtitle {
+    font-size: 1.15rem;
+    color: #555;
+    margin-top: 0.2rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    max-width: 70ch;
+}
+
+/*header at top of page */
+.page-header {
+    font-size: 0.9rem;
+    color: #666;
+    letter-spacing: 0.3px;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #ddd;
+}
