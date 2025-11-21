@@ -15,14 +15,45 @@
     <div class="title-block">
         <h1 class="main-title">The Hidden Shape of Recessions: Industry Declines & Recoveries</h1>
         <p class="subtitle">
-            Put text here
+            The following visualization is intended to showcase the impact of the recessions in 2001, 2008 and 2020 on the United States economy by industry. 
         </p>
     </div>
 
-    <!--Visualization-->
-    <svg id="chart"></svg>
+<label for="recessionSelect">Which recession do you remember most?</label>
+<select id="recessionSelect">
+  <option value="">— Select One —</option>
+  <option value="2001">2001</option>
+  <option value="2008">2008</option>
+  <option value="2020">2020</option>
+</select>
 
-    <!--Link to JS-->
+    <!--Line Graph for Economic Recessions-->
+    <h2>Year to Year Employment Changes From 1995 to 2014</h2>
+    <svg id="yoyChart" with="950", height="500"></svg>
     <script type="module" src="visualization.js"></script>
+
+    <h2>Not All Recessions Are Created Equal</h2>
+     <p class="subtitle1">
+            The following visualizations showcase the percentage of employment change per industry during each recession period (2001, 2008 and 2020)
+            - 2001 Recession: March 2001 to November 2001
+            - 2008 Recession: December 2007 to June 2009
+            - 2020 Recession: Feburary 2020 to April 2020
+        </p>
+
+<select id="industrySelect"></select>
+
+<label for="recessionSelect">Which recession was the most impactful to you (or someone you care about)?</label>
+<select id="recessionSelect">
+  <option value="">— Select One —</option>
+  <option value="2001">2001</option>
+  <option value="2008">2008</option>
+  <option value="2020">2020</option>
+</select>
+
+<div id="recessionProfiles"></div>
+
+<script type="module" src="recessionvisualization1.js"></script>
+
+
 </body>
 </html>
