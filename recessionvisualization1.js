@@ -3,7 +3,7 @@ import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 const FILE = "bls_employment_stats.csv";
 
 // ------------------------------------
-// Recession windows (NBER-style)
+// Recession windows
 // ------------------------------------
 const recessionWindows = {
   2001: { start: "2001-03", end: "2001-11" },
@@ -41,13 +41,18 @@ const supersectorMap = {
 
 let rawData = [];
 
+// ------------------------------------
 // Load CSV
+// ------------------------------------
 d3.csv(FILE).then(data => {
   rawData = data;
   populateSupersectorDropdown();
+  populateRecessionDropdown();
 });
 
-// Build dropdown
+// ------------------------------------
+// Populate industry dropdown
+// ------------------------------------
 function populateSupersectorDropdown() {
   const dropdown = document.getElementById("industrySelect");
   dropdown.innerHTML = "";
@@ -60,11 +65,25 @@ function populateSupersectorDropdown() {
     );
 
   dropdown.addEventListener("change", updateProfiles);
-  document.getElementById("recessionSelect")
-    .addEventListener("change", updateProfiles);
 }
 
-// Main update
+// ------------------------------------
+// Populate recession dropdown
+// ------------------------------------
+function populateRecessionDropdown() {
+  const r = document.getElementById("recessionSelect1");
+  r.innerHTML = "";
+
+  Object.keys(recessionWindows).forEach(year => {
+    r.appendChild(new Option(`${year} Recession`, year));
+  });
+
+  r.addEventListener("change", updateProfiles);
+}
+
+// ------------------------------------
+// MAIN UPDATE
+// ------------------------------------
 function updateProfiles() {
   const code = document.getElementById("industrySelect").value;
   if (!code) return;
@@ -80,14 +99,16 @@ function updateProfiles() {
     .sort((a, b) => a.date - b.date);
 
   const profiles = {};
-  for (const key of Object.keys(recessionWindows)) {
-    profiles[key] = extractRecessionProfile(series, recessionWindows[key]);
+  for (const year of Object.keys(recessionWindows)) {
+    profiles[year] = extractRecessionProfile(series, recessionWindows[year]);
   }
 
   drawAlignedRecessionPanels(profiles);
 }
 
-// Build aligned recession profile
+// ------------------------------------
+// Extract aligned recession slice
+// ------------------------------------
 function extractRecessionProfile(series, window) {
   const start = new Date(window.start + "-01");
   const end = new Date(window.end + "-01");
@@ -99,65 +120,47 @@ function extractRecessionProfile(series, window) {
 
   return sliced.map((d, i) => ({
     monthIndex: i,
-    date: d.date,
     pctChange: (d.value - baseline) / baseline
   }));
 }
 
-// Draw the 3 aligned panels
+// ------------------------------------
+// DRAW ALL 3 PANELS
+// ------------------------------------
 function drawAlignedRecessionPanels(profiles) {
   const container = d3.select("#recessionProfiles");
   container.html("");
 
-  const focus = document.getElementById("recessionSelect")?.value || "";
+  const focus = document.getElementById("recessionSelect1").value;
+  document.getElementById("recessionSelect1").value = focus; // keep synced
 
-  // Panel widths
-  const panelWidths = {
-    "2001": 300,
-    "2008": 880,
-    "2020": 330
-  };
-
-  // Explicit x-axis lengths (months)
-  const xLengths = {
-    "2001": 9,
-    "2020": 3,
-    "2008": null
-  };
+  const panelWidths = { "2001": 300, "2008": 880, "2020": 330 };
+  const xLengths = { "2001": 9, "2020": 3, "2008": null };
 
   const height = 260;
   const margin = { top: 40, right: 20, bottom: 60, left: 80 };
 
-  // GLOBAL Y-SCALE
-  const allPoints = Object.values(profiles).flat();
-  const globalYExtent = d3.extent(allPoints, d => d.pctChange);
+  const allPts = Object.values(profiles).flat();
+  const globalYExtent = d3.extent(allPts, d => d.pctChange);
 
   const recessionOrder = ["2001", "2008", "2020"];
 
   recessionOrder.forEach(key => {
     const data = profiles[key] || [];
+    const isFocus = (focus === key);   // ✅ FIXED — now inside the loop
 
     const panelWidth = panelWidths[key];
     const innerWidth = panelWidth - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
 
-    // X scale for each recession
     const maxMonths = xLengths[key] ?? (data.length - 1);
 
-    const x = d3.scaleLinear()
-      .domain([0, maxMonths])
-      .range([0, innerWidth]);
-
-    // Shared Y scale
-    const y = d3.scaleLinear()
-      .domain(globalYExtent).nice()
-      .range([innerHeight, 0]);
+    const x = d3.scaleLinear().domain([0, maxMonths]).range([0, innerWidth]);
+    const y = d3.scaleLinear().domain(globalYExtent).nice().range([innerHeight, 0]);
 
     const line = d3.line()
       .x(d => x(d.monthIndex))
       .y(d => y(d.pctChange));
-
-    const isFocus = (focus === key);
 
     const svg = container.append("svg")
       .attr("width", panelWidth)
@@ -168,36 +171,20 @@ function drawAlignedRecessionPanels(profiles) {
     const g = svg.append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // -----------------------
-    // X AXIS (FULL MONTH LABELS)
-    // -----------------------
-g.append("g")
-  .attr("transform", `translate(0,${innerHeight})`)
-  .call(
-    d3.axisBottom(x)
-      .ticks(maxMonths)               
-      .tickFormat(d => Number.isInteger(d) ? d : "")
-      .tickValues(d3.range(0, maxMonths + 1, 2)) 
-  )
-  .selectAll("text")
-  .style("font-size", "11px")
-  .style("text-anchor", "middle");
+    // X axis
+    g.append("g")
+      .attr("transform", `translate(0,${innerHeight})`)
+      .call(
+        d3.axisBottom(x)
+          .tickValues(d3.range(0, maxMonths + 1, 2))
+          .tickFormat(d => d)
+      );
 
-    // -----------------------
-    // Y AXIS (NO DUPLICATION)
-    // -----------------------
-g.append("g")
-  .call(
-    d3.axisLeft(y)
-      .ticks(5)                // <= reduces repetition
-      .tickFormat(d3.format(".0%"))
-  )
-  .selectAll("text")
-  .style("font-size", "11px");
+    // Y axis
+    g.append("g")
+      .call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(".0%")));
 
-    // -----------------------
-    // RECESSION LINE
-    // -----------------------
+    // Line
     g.append("path")
       .datum(data.filter(d => d.monthIndex <= maxMonths))
       .attr("fill", "none")
@@ -205,20 +192,15 @@ g.append("g")
       .attr("stroke-width", isFocus ? 3 : 2)
       .attr("d", line);
 
-    // -----------------------
-    // TITLE
-    // -----------------------
+    // Title
     g.append("text")
       .attr("x", innerWidth / 2)
       .attr("y", -15)
       .attr("text-anchor", "middle")
       .style("font-size", "15px")
-      .style("font-weight", isFocus ? "700" : "600")
       .text(`${key} Recession`);
 
-    // -----------------------
-    // AXIS LABELS
-    // -----------------------
+    // X label
     g.append("text")
       .attr("x", innerWidth / 2)
       .attr("y", innerHeight + 45)
@@ -226,6 +208,7 @@ g.append("g")
       .style("font-size", "12px")
       .text("Months Since Start of Recession");
 
+    // Y label
     g.append("text")
       .attr("transform", "rotate(-90)")
       .attr("x", -innerHeight / 2)
@@ -235,3 +218,4 @@ g.append("g")
       .text("Employment Change (%)");
   });
 }
+
