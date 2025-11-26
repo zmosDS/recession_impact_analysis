@@ -1,0 +1,191 @@
+/* Enable dark mode */
+html {
+    color-scheme: light dark;
+
+    background-color: Canvas;
+    color: CanvasText
+}
+
+body {
+    /* Set line height to 1.5 times the font size and use the OS's UI font as the website font (from lab)*/
+    font: 100%/1.6 system-ui;
+    max-width: 85ch;
+    margin-inline: auto;
+    padding: 2rem 1.25rem;
+}
+
+h1 {
+    margin-bottom: 1em;
+}
+
+/* - Page header + title block - */
+
+.title-block {
+    margin-bottom: 2rem;
+}
+
+/* Main title styling */
+.main-title {
+    font-size: 2rem;
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+/* Subtitle (already added but enhanced) */
+.subtitle {
+    font-size: 1.15rem;
+    color: #555;
+    margin-top: 0.2rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    max-width: 70ch;
+}
+
+/*header at top of page */
+.page-header {
+    font-size: 0.9rem;
+    color: #666;
+    letter-spacing: 0.3px;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #ddd;
+}
+
+/* - YoY chart container - */
+
+#yoy-chart {
+    width: 100%;
+    height: 450px;
+    margin-top: 2rem;
+}
+
+/* Tooltip box on hover */
+.tooltip {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    pointer-events: none;
+    color: #333;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Shading recession windows */
+.recession-band {
+    fill: #d9d9d9;
+    opacity: 0.75;
+}
+
+/* Highlights recession window */
+.recession-band.selected {
+    opacity: 0.7;
+    stroke: #000;
+    stroke-width: 1;
+}
+
+/* - Grid on Chart - */
+
+.x-grid line,
+.y-grid line {
+    stroke: #cccccc;
+    stroke-width: 1;
+    opacity: 0.7;
+}
+
+.x-grid path,
+.y-grid path {
+    stroke: none;
+}
+
+/* Bold zero line */
+.zero-line {
+    stroke: #000;
+    stroke-width: 2.5;
+    opacity: 0.8;
+}
+
+/* - Line & dot Styling - */
+
+.dot {
+    fill: #0077CC;
+    stroke: none;
+}
+
+.focus-dot {
+    fill: transparent;
+    stroke: #0077CC;
+    stroke-width: 2;
+}
+
+/* Main YoY line stlying */
+.yoy-line {
+    stroke: #0077CC;
+    filter: drop-shadow(0px 0px 3px rgba(255, 255, 255, 0.8));
+}
+
+/* - Chart Text - */
+
+.chart-title {
+    font-size: 1.6rem;
+    font-weight: 600;
+    fill: CanvasText;
+}
+
+.axis-label {
+    font-size: 0.9rem;
+    fill: CanvasText;
+}
+
+.chart-caption {
+    font-size: 0.8rem;
+    fill: CanvasText;
+}
+
+.chart-legend {
+    font-size: 0.9rem;
+    color: #bfbfbf;
+    margin: 0 0 15px 5px;
+}
+
+/* - Dark mode adjustments - */
+
+@media (prefers-color-scheme: dark) {
+
+    /* Recession windows */
+    .recession-band {
+        fill: #666;
+        opacity: 0.35;
+    }
+
+    /* Grid lines */
+    .x-grid line,
+    .y-grid line {
+        stroke: #444;
+        opacity: 0.6;
+    }
+
+    /* YoY line for contrast */
+    .yoy-line {
+        stroke: #4DA3FF;
+        filter: drop-shadow(0px 0px 4px rgba(0, 0, 0, 0.5));
+    }
+
+    .dot {
+        fill: #4DA3FF;
+    }
+
+    .focus-dot {
+        stroke: #4DA3FF;
+    }
+
+    /* Tooltip */
+    .tooltip {
+        background: rgba(30, 30, 30, 0.95);
+        border: 1px solid #555;
+        color: #f5f5f5;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.6);
+    }
+}
