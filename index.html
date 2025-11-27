@@ -8,20 +8,117 @@
     <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm" type="module"></script>
 </head>
 <body>
+    <!--TODO: Note that we need a hook to open up our video presentation-->
     <!--Header/Title-->
     <div class="page-header">Final Project · Team Smooth JAZ · 
         <a href="writeup.html" class="header-link">Write-up</a>
     </div>
+
     <div class="title-block">
         <h1 class="main-title">The Hidden Shape of Recessions: Industry Declines & Recoveries</h1>
         <p class="subtitle">Exploring how recessions shape employment trends</p>
     </div>
 
-    <!-- Interactive YOY Chart -->
-    <div id="yoy-chart"></div>
-    <div id="tooltip" class="tooltip" style="opacity:0;"></div>
+    <!--TODO: Consider how the overall story flows. Do we want users to scroll down and things happen or do we want it to be more like slides where the page stays fixed and then the transitions happen? I lean towards the slide approach.-->
+    <!--TODO: Fix/refine wording, especially when we get the whole story flowing together. Remove AND/BUT/THEN from titles.-->
+    <!--TODO: Are there some more interesting ways we can show this data, especially in later visualizations than just a line chart? Should we consider things like Horizon charts, Radar charts, Mini vector/slope graphs for each industry, An animated "race" leaderboard or static leaderboard, Slope graphs?-->
 
-    <!--Link to JS-->
+    <!-- =================== -->
+    <!--SETUP (AND)-->
+    <!-- =================== -->
+
+    <!-- AND #1 -->
+    <section class="story-section" id="and-1">
+        <h2 class="story-heading">AND: Recessions leave a mark on all of us.</h2>
+        <p class="story-text">
+            Recessions appear as sudden dips in total employment, and most readers have lived through at least one. 
+            These events are shared, memorable disruptions.
+        </p>
+
+        <!-- Viz #1-->
+        <div id="yoy-chart"></div>
+        <div id="tooltip" class="tooltip" style="opacity:0;"></div>
+
+        <div class="story-prompt">
+            <p><strong>Which recession do you remember most?</strong></p>
+            <div class="choice-row" id="recession-choice">
+                <button data-rec="2001">2001</button>
+                <button data-rec="2008">2008</button>
+                <button data-rec="2020">2020</button>
+            </div>
+        </div>
+        <!--TODO: Actions related to the buttons. Do we start with the full chart and then zoom in on what the reader chooses? Highlight the pop-up stats? Mark notable/historic dates & events?-->
+    </section>
+
+    <!-- AND #2 -->
+    <section class="story-section" id="and-2">
+        <h2 class="story-heading">AND: The economy is made of many industries, each with its own behavior.</h2>
+        <p class="story-text">
+            Behind the big national trend are dozens of industries, each with its own employment cycle.
+        </p>
+
+        <!--TODO: Before prompting the user to pick an industry. We should show a side by side of 3 industries that responded differently in the same recession-->
+        <p class="story-prompt">
+            <strong>Which industry is closest to yours (or someone close to you)?</strong>
+        </p>
+
+        <!-- TODO: Add 22 selectable industry buttons here (Cut down to 20 so that we can have a nice grid of 4x5 or 5x4? Or even less? Top 15/16?)-->
+        <div id="industry-grid" class="industry-grid"></div>
+        <!--TODO: Display the curve for the recession and industry that the user picked. Highlight notable dates/events/stats?-->
+    </section>
+
+    <!-- ============================ -->
+    <!--CONFLICT & CLIMAX (BUT)-->
+    <!-- ============================ -->
+
+    <!-- BUT #1 -->
+    <section class="story-section" id="but-1">
+        <h2 class="story-heading">BUT: No two recessions behave the same.</h2>
+        <p class="story-text">
+            The recessions of 2001, 2008, and 2020 were caused by different shocks and produced different patterns of job loss.
+            Some were slow burns; others were sudden free-falls.
+            <!--TODO: Make this meatier with more history/specifics? Or keep this general and use annotations on graphs to highlight events/causes, etc.?-->
+        </p>
+
+        <!-- TODO: Visualization comparing recession profiles. I.e., show all industry they selected during all recessions. For video demo want to pick one that looks different.-->
+        <div id="recession-profile-viz" class="viz-placeholder"></div>
+    </section>
+
+    <!--TODO: Combine BUT #1 and BUT #2 as they are basically saying the same thing-->
+    <!-- BUT #2 -->
+    <section class="story-section" id="but-2">
+        <h2 class="story-heading">BUT: Your industry experienced each recession differently.</h2>
+        <p class="story-text">
+            Your chosen industry may have collapsed in one recession, boomed through another, or struggled to bounce back.
+            Its story isn’t the same as the overall economy’s story.
+        </p>
+
+        <!-- TODO: Visualization of normalized curves for selected industry (Note: Basically the same as what was proposed in BUT #1 so needs reconciling) -->
+        <div id="industry-normalized-viz" class="viz-placeholder"></div>
+    </section>
+
+    <!-- ======================= -->
+    <!--RESOLUTION (THEN)-->
+    <!-- ======================= -->
+
+    <section class="story-section" id="then">
+        <h2 class="story-heading">THEN: Recovery reshapes industries, not just restores them.</h2>
+        <p class="story-text">
+            After each recession ends, industries settle into new trajectories. 
+            Some reinvent themselves and grow beyond pre-recession levels; others stabilize lower. 
+            The shape of a recession becomes the shape of a future.
+        </p>
+
+        <!-- TODO: Visualization for recession recovery or before/after comparison -->
+        <div id="recovery-comparison-viz" class="viz-placeholder"></div>
+
+        <p class="personal-takeaway" id="personal-takeaway"></p>
+        <!--TODO: Personalized takeaway based on the industry chosen-->
+    </section>
+
+    <!--TODO: Do we give the reader the option to start again with a different industry that takes them back up to the selection grid? Or do we end with some kind of open visualization that they can play with?-->
+
+    <!-- Load visualization JS -->
     <script type="module" src="visualization.js"></script>
 </body>
 </html>
