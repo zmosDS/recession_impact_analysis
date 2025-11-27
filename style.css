@@ -189,3 +189,51 @@ h1 {
         box-shadow: 0 3px 12px rgba(0, 0, 0, 0.6);
     }
 }
+
+.story-section {
+    max-width: 900px;
+    margin: 80px auto;
+    padding: 20px 0;
+}
+
+.story-heading {
+    font-size: 1.9rem;
+    margin-bottom: 12px;
+}
+
+.story-text {
+    font-size: 1.1rem;
+    margin-bottom: 18px;
+    line-height: 1.6;
+}
+
+.story-prompt {
+    margin: 25px 0;
+    font-size: 1.1rem;
+}
+
+.choice-row button {
+    margin-right: 12px;
+    padding: 8px 14px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.industry-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.viz-placeholder {
+    width: 100%;
+    height: 300px;
+    background: #f3f3f3;
+    border: 1px dashed #aaa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #777;
+    font-style: italic;
+}
