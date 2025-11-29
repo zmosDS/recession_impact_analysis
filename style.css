@@ -226,14 +226,56 @@ h1 {
     margin-top: 20px;
 }
 
-.viz-placeholder {
-    width: 100%;
-    height: 300px;
-    background: #f3f3f3;
-    border: 1px dashed #aaa;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #777;
-    font-style: italic;
+
+/* Layout for the grid */
+.industry-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
 }
+
+/* Base button styling */
+.industry-button {
+  padding: 0.5rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid #ccc;
+  background: #f7f7f7;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+/* Hover (optional) */
+.industry-button:hover {
+  background: #ececec;
+}
+
+/* <-- This is the important part */
+.industry-button.active {
+  border-color: #2563eb;
+  background: #e0ecff;
+  color: #0b1a33;
+  font-weight: 600;
+}
+
+
+/* Title above each mini chart */
+#industry-normalized-viz .mini-chart-title {
+  margin-bottom: 0.35rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+/* Make SVG scale to the card */
+#industry-normalized-viz .mini-chart-card svg {
+  width: 100% !important;
+  height: auto;
+}
+
+#industry-normalized-viz.viz-placeholder {
+    background: none !important;
+    border: none !important;
+    height: auto !important;
+}
+
+
