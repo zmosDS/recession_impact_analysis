@@ -1,7 +1,6 @@
 body {
     font: 100%/1.6 system-ui;
-    max-width: 85ch;
-    margin-inline: auto;
+    margin-left: 4rem;
     padding: 2rem 1.25rem;
 }
 
@@ -39,8 +38,8 @@ h1 {
 /* - YoY chart container - */
 #yoy-chart {
     width: 100%;
-    height: 450px;
-    margin-top: 2rem;
+    height: 500px;
+    margin-top: 0;
 }
 
 .tooltip {
@@ -127,7 +126,6 @@ h1 {
 }
 
 /* Content sections */
-
 .story-heading {
     font-size: 1.9rem;
     margin-bottom: 12px;
@@ -144,6 +142,7 @@ h1 {
     font-size: 1.1rem;
 }
 
+/* Existing horizontal button styling */
 .choice-row button {
     margin-right: 12px;
     padding: 8px 14px;
@@ -171,19 +170,15 @@ h1 {
 }
 
 /* ========================================================= */
-/* ================ SLIDESHOW STYLES  ====================== */
+/* ================ SLIDESHOW STYLES ======================= */
 /* ========================================================= */
-
-/* ------------------------------ */
-/* TITLE SLIDE STYLING            */
-/* ------------------------------ */
 
 .title-slide {
     display: flex;
     flex-direction: column;
-    justify-content: center;   /* vertical center */
-    align-items: center;       /* horizontal center */
-    height: 65vh;              /* centers the block on screen */
+    justify-content: center;
+    align-items: center;
+    height: 65vh;
     text-align: center;
     padding: 2rem;
 }
@@ -201,7 +196,6 @@ h1 {
     line-height: 1.5;
 }
 
-/* Start Exploring button */
 #start-exploring {
     padding: 0.8rem 1.6rem;
     font-size: 1.15rem;
@@ -217,21 +211,18 @@ h1 {
     background: #005fa3;
 }
 
-
-/* All frames stack on top; only .active is visible */
 #frame-container {
     position: relative;
-    min-height: 70vh;  /* Space for charts + text */
+    min-height: 70vh;
     margin-top: 2rem;
 }
 
-/* Stacked frames that fade in/out */
 .frame {
     opacity: 0;
     display: none;
     transition: opacity 0.45s ease;
     position: relative;
-    min-height: 60vh;     /* ensures consistent height for transitions */
+    min-height: 60vh;
 }
 
 .frame.active {
@@ -239,21 +230,17 @@ h1 {
     opacity: 1;
 }
 
-/* Buttons + dots container */
 #controls {
     display: flex;
-    justify-content: space-between; /* dots left, next right */
+    justify-content: space-between;
     align-items: center;
-
     margin-top: 3rem;
     padding-top: 1.5rem;
     border-top: 1px solid #ccc;
-
     position: relative;
     z-index: 20;
 }
 
-/* Next button */
 #controls button {
     padding: 0.6rem 1.4rem;
     font-size: 1rem;
@@ -267,7 +254,6 @@ h1 {
     background: #eee;
 }
 
-/* Progress Dots */
 #dots {
     display: flex;
     gap: 0.5rem;
@@ -286,7 +272,6 @@ h1 {
     background: #222;
 }
 
-/* Wrap-up frame */
 .wrap-up-controls {
     margin-top: 2rem;
 }
@@ -309,7 +294,6 @@ h1 {
     background: #e8e8e8;
 }
 
-/* Responsive improvements */
 @media (max-width: 600px) {
     #controls {
         flex-direction: column;
@@ -320,3 +304,87 @@ h1 {
         width: 100%;
     }
 }
+
+/* ========================================================= */
+/* Frame 1 Two-Column Layout                                 */
+/* ========================================================= */
+
+.frame1-layout {
+    display: grid;
+    grid-template-columns: 2.7fr 1fr;
+    gap: 0.35rem;      /* 🔥 ALMOST TOUCHING */
+    align-items: flex-start;
+    margin-top: 2rem;
+}
+
+.frame1-chart {
+    width: 100%;
+}
+
+.frame1-sidebar {
+    padding-top: 0;    /* 🔥 remove padding above sidebar */
+    margin-top: 0;     /* 🔥 zero spacing */
+    max-width: 260px;
+}
+
+.frame1-sidebar .story-prompt p {
+    margin-bottom: 0.4rem;   /* 🔥 very tight */
+}
+
+/* ========================================================= */
+/* Vertical button layout (Frame 1)                          */
+/* ========================================================= */
+
+#recession-choice {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;      /* 🔥 very tight spacing */
+    margin-top: 0.25rem;
+}
+
+#recession-choice button {
+    width: 100%;
+    text-align: left;
+    padding: 8px 12px;  /* tighter buttons */
+}
+
+/* Responsive (same as before) */
+@media (max-width: 800px) {
+    .frame1-layout {
+        grid-template-columns: 1fr;
+    }
+    .frame1-sidebar {
+        margin-top: 1.2rem;
+    }
+
+    #recession-choice {
+        flex-direction: row;
+    }
+
+    #recession-choice button {
+        width: auto;
+    }
+}
+/* =============================== */
+/* Recession selection info box    */
+/* =============================== */
+
+.rec-info-box {
+    margin-top: 0.6rem;
+    background: #f7f7f7;
+    border: 1px solid #ccc;
+    padding: 0.6rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #333;
+    display: none; /* hidden until a recession is selected */
+}
+
+/* Highlight selected button */
+#recession-choice button.selected {
+    background: #0077cc;
+    color: white;
+    border-color: #005fa3;
+}
+
+

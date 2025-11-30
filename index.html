@@ -53,16 +53,28 @@
             These events are shared, memorable disruptions.
         </p>
 
-        <div id="yoy-chart"></div>
-        <div id="tooltip" class="tooltip" style="opacity:0;"></div>
+        <div class="frame1-layout">
 
-        <div class="story-prompt">
-            <p><strong>Which recession do you remember most?</strong></p>
-            <div class="choice-row" id="recession-choice">
-                <button data-rec="2001">2001</button>
-                <button data-rec="2008">2008</button>
-                <button data-rec="2020">2020</button>
+            <!-- LEFT: YoY chart -->
+            <div class="frame1-chart">
+                <div id="yoy-chart"></div>
+                <div id="tooltip" class="tooltip" style="opacity:0;"></div>
             </div>
+
+            <!-- RIGHT: Prompt + buttons -->
+            <div class="frame1-sidebar">
+                <div class="story-prompt">
+                    <p><strong>Which recession do you remember most?</strong></p>
+                    <div class="choice-row" id="recession-choice">
+                        <button data-rec="2001">2001</button>
+                        <button data-rec="2008">2008</button>
+                        <button data-rec="2020">2020</button>
+                    </div>
+                    
+                    <div id="rec-info-box" class="rec-info-box"></div>
+                </div>
+            </div>
+
         </div>
     </div>
 
