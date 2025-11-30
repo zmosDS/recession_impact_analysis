@@ -1,13 +1,4 @@
-/* Enable dark mode */
-html {
-    color-scheme: light dark;
-
-    background-color: Canvas;
-    color: CanvasText
-}
-
 body {
-    /* Set line height to 1.5 times the font size and use the OS's UI font as the website font (from lab)*/
     font: 100%/1.6 system-ui;
     max-width: 85ch;
     margin-inline: auto;
@@ -18,13 +9,8 @@ h1 {
     margin-bottom: 1em;
 }
 
-/* - Page header + title block - */
+/* - Page header & Title - */
 
-.title-block {
-    margin-bottom: 2rem;
-}
-
-/* Main title styling */
 .main-title {
     font-size: 2rem;
     margin-bottom: 0.25rem;
@@ -32,7 +18,6 @@ h1 {
     line-height: 1.2;
 }
 
-/* Subtitle (already added but enhanced) */
 .subtitle {
     font-size: 1.15rem;
     color: #555;
@@ -42,7 +27,6 @@ h1 {
     max-width: 70ch;
 }
 
-/*header at top of page */
 .page-header {
     font-size: 0.9rem;
     color: #666;
@@ -53,14 +37,12 @@ h1 {
 }
 
 /* - YoY chart container - */
-
 #yoy-chart {
     width: 100%;
     height: 450px;
     margin-top: 2rem;
 }
 
-/* Tooltip box on hover */
 .tooltip {
     position: absolute;
     background: rgba(255, 255, 255, 0.95);
@@ -79,15 +61,13 @@ h1 {
     opacity: 0.75;
 }
 
-/* Highlights recession window */
 .recession-band.selected {
     opacity: 0.7;
     stroke: #000;
     stroke-width: 1;
 }
 
-/* - Grid on Chart - */
-
+/* Grid lines */
 .x-grid line,
 .y-grid line {
     stroke: #cccccc;
@@ -100,18 +80,16 @@ h1 {
     stroke: none;
 }
 
-/* Bold zero line */
+/* Zero line */
 .zero-line {
     stroke: #000;
     stroke-width: 2.5;
     opacity: 0.8;
 }
 
-/* - Line & dot Styling - */
-
+/* Line & dots */
 .dot {
     fill: #0077CC;
-    stroke: none;
 }
 
 .focus-dot {
@@ -120,14 +98,12 @@ h1 {
     stroke-width: 2;
 }
 
-/* Main YoY line stlying */
 .yoy-line {
     stroke: #0077CC;
     filter: drop-shadow(0px 0px 3px rgba(255, 255, 255, 0.8));
 }
 
-/* - Chart Text - */
-
+/* Chart text */
 .chart-title {
     font-size: 1.6rem;
     font-weight: 600;
@@ -150,51 +126,7 @@ h1 {
     margin: 0 0 15px 5px;
 }
 
-/* - Dark mode adjustments - */
-
-@media (prefers-color-scheme: dark) {
-
-    /* Recession windows */
-    .recession-band {
-        fill: #666;
-        opacity: 0.35;
-    }
-
-    /* Grid lines */
-    .x-grid line,
-    .y-grid line {
-        stroke: #444;
-        opacity: 0.6;
-    }
-
-    /* YoY line for contrast */
-    .yoy-line {
-        stroke: #4DA3FF;
-        filter: drop-shadow(0px 0px 4px rgba(0, 0, 0, 0.5));
-    }
-
-    .dot {
-        fill: #4DA3FF;
-    }
-
-    .focus-dot {
-        stroke: #4DA3FF;
-    }
-
-    /* Tooltip */
-    .tooltip {
-        background: rgba(30, 30, 30, 0.95);
-        border: 1px solid #555;
-        color: #f5f5f5;
-        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.6);
-    }
-}
-
-.story-section {
-    max-width: 900px;
-    margin: 80px auto;
-    padding: 20px 0;
-}
+/* Content sections */
 
 .story-heading {
     font-size: 1.9rem;
@@ -236,4 +168,155 @@ h1 {
     justify-content: center;
     color: #777;
     font-style: italic;
+}
+
+/* ========================================================= */
+/* ================ SLIDESHOW STYLES  ====================== */
+/* ========================================================= */
+
+/* ------------------------------ */
+/* TITLE SLIDE STYLING            */
+/* ------------------------------ */
+
+.title-slide {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;   /* vertical center */
+    align-items: center;       /* horizontal center */
+    height: 65vh;              /* centers the block on screen */
+    text-align: center;
+    padding: 2rem;
+}
+
+.title-slide .main-title {
+    font-size: 2.7rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.title-slide .subtitle {
+    font-size: 1.4rem;
+    color: var(--subtitle-color, #555);
+    margin-bottom: 2rem;
+    line-height: 1.5;
+}
+
+/* Start Exploring button */
+#start-exploring {
+    padding: 0.8rem 1.6rem;
+    font-size: 1.15rem;
+    border-radius: 8px;
+    background: #0077cc;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+#start-exploring:hover {
+    background: #005fa3;
+}
+
+
+/* All frames stack on top; only .active is visible */
+#frame-container {
+    position: relative;
+    min-height: 70vh;  /* Space for charts + text */
+    margin-top: 2rem;
+}
+
+/* Stacked frames that fade in/out */
+.frame {
+    opacity: 0;
+    display: none;
+    transition: opacity 0.45s ease;
+    position: relative;
+    min-height: 60vh;     /* ensures consistent height for transitions */
+}
+
+.frame.active {
+    display: block;
+    opacity: 1;
+}
+
+/* Buttons + dots container */
+#controls {
+    display: flex;
+    justify-content: space-between; /* dots left, next right */
+    align-items: center;
+
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #ccc;
+
+    position: relative;
+    z-index: 20;
+}
+
+/* Next button */
+#controls button {
+    padding: 0.6rem 1.4rem;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 6px;
+    border: 1px solid #666;
+    background: #fafafa;
+}
+
+#controls button:hover {
+    background: #eee;
+}
+
+/* Progress Dots */
+#dots {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.dot {
+    width: 13px;
+    height: 13px;
+    background: #bbb;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.dot.active {
+    background: #222;
+}
+
+/* Wrap-up frame */
+.wrap-up-controls {
+    margin-top: 2rem;
+}
+
+.wrap-up-question {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+#restart-button {
+    padding: 10px 18px;
+    font-size: 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 1px solid #444;
+    background: #f7f7f7;
+}
+
+#restart-button:hover {
+    background: #e8e8e8;
+}
+
+/* Responsive improvements */
+@media (max-width: 600px) {
+    #controls {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    #controls button {
+        width: 100%;
+    }
 }
