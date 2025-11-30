@@ -93,84 +93,158 @@
 
         <div id="industry-grid" class="industry-grid">
 
-            <!-- Each button holds an image + label -->
-            <!-- Replace the src with your real icon URLs -->
-            <button class="industry-btn" data-sector="Agriculture">
-                <img src="img/agriculture.png" alt="Agriculture">
+            <!-- Durable Goods -->
+            <button class="industry-btn" data-sector="Durable Goods">
+                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+                <path d="M10 2 L14 2 L15 6 L9 6 Z" />
+                <path d="M9 6 L5 12 L9 12 L9 22 L15 22 L15 12 L19 12 L15 6" />
+                </svg>
                 <span>Durable Goods</span>
             </button>
 
-            <button class="industry-btn" data-sector="Mining">
-                <img src="img/mining.png" alt="Mining">
+            <!-- Professional Services -->
+            <button class="industry-btn" data-sector="Professional Services">
+                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+                <rect x="3" y="7" width="18" height="14" rx="2"/>
+                <path d="M9 7 V5 a2 2 0 0 1 2-2 h2 a2 2 0 0 1 2 2 v2" />
+                <path d="M3 12 h18" />
+                </svg>
                 <span>Professional Services</span>
             </button>
 
-            <button class="industry-btn" data-sector="Construction">
-                <img src="img/construction.png" alt="Construction">
+            <!-- Nondurable Goods -->
+            <button class="industry-btn" data-sector="Nondurable Goods">
+                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+                <path d="M3 7 l9-4 l9 4 v10 l-9 4 l-9-4 z" />
+                <path d="M12 3 v18" />
+                </svg>
                 <span>Nondurable Goods</span>
             </button>
 
-            <button class="industry-btn" data-sector="Manufacturing">
-                <img src="img/manufacturing.png" alt="Manufacturing">
-                <span>Retail trade</span>
-            </button>
-
-            <button class="industry-btn" data-sector="Wholesale Trade">
-                <img src="img/wholesale.png" alt="Wholesale">
-                <span>Private education and health services</span>
-            </button>
-
+            <!-- Retail Trade -->
             <button class="industry-btn" data-sector="Retail Trade">
-                <img src="img/retail.png" alt="Retail">
+                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+                <path d="M3 10 h18 l-1-5 h-16 z" />
+                <path d="M4 10 v10 h16 v-10" />
+                <rect x="9" y="14" width="6" height="6" />
+                </svg>
                 <span>Retail Trade</span>
             </button>
 
-            <button class="industry-btn" data-sector="Transportation">
-                <img src="img/transportation.png" alt="Transportation">
-                <span>Transportation</span>
+            <!-- Private Education & Health -->
+            <button class="industry-btn" data-sector="Private Education and Health Services">
+                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+                <path d="M4 4 h10 a3 3 0 0 1 3 3 v13 l-5-2 l-5 2 v-16 a3 3 0 0 1 3-3" />
+                <path d="M17 5 v4 m-2-2 h4" />
+                </svg>
+                <span>Education & Health</span>
             </button>
 
-            <button class="industry-btn" data-sector="Utilities">
-                <img src="img/utilities.png" alt="Utilities">
-                <span>Utilities</span>
+            <!-- Financial Activities -->
+            <button class="industry-btn" data-sector="Financial Activities">
+                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+                <rect x="4" y="12" width="3" height="8"/>
+                <rect x="10" y="8" width="3" height="12"/>
+                <rect x="16" y="4" width="3" height="16"/>
+                <path d="M3 20 h18" />
+                </svg>
+                <span>Financial Activities</span>
             </button>
 
-            <button class="industry-btn" data-sector="Information">
-                <img src="img/information.png" alt="Information">
-                <span>Information</span>
+            <!-- Wholesale Trade -->
+            <button class="industry-btn" data-sector="Wholesale Trade">
+                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+                <path d="M3 10 L12 4 L21 10 v10 h-18 z" />
+                <rect x="7" y="14" width="4" height="6" />
+                <rect x="13" y="14" width="4" height="6" />
+                </svg>
+                <span>Wholesale Trade</span>
             </button>
 
-            <button class="industry-btn" data-sector="Finance">
-                <img src="img/finance.png" alt="Finance">
-                <span>Finance</span>
+            <!-- Construction -->
+            <button class="industry-btn" data-sector="Construction">
+                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+                <path d="M4 18 a8 8 0 0 1 16 0" />
+                <path d="M6 18 v-2 a6 6 0 0 1 12 0 v2" />
+                <path d="M12 6 v4" />
+                </svg>
+                <span>Construction</span>
             </button>
 
-            <button class="industry-btn" data-sector="Real Estate">
-                <img src="img/realestate.png" alt="Real Estate">
-                <span>Real Estate</span>
+            <!-- Other Services -->
+            <button class="industry-btn" data-sector="Other Services">
+                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+                <circle cx="12" cy="12" r="3" />
+                <path d="M12 2 v3 M12 19 v3 M4.2 4.2 l2.1 2.1 M17.7 17.7 l2.1 2.1 
+                   M2 12 h3 M19 12 h3 M4.2 19.8 l2.1-2.1 M17.7 6.3 l2.1-2.1" />
+                </svg>
+                <span>Other Services</span>
             </button>
 
-            <button class="industry-btn" data-sector="Professional Services">
-                <img src="img/professional.png" alt="Professional">
-                <span>Professional Services</span>
-            </button>
-
-            <button class="industry-btn" data-sector="Education">
-                <img src="img/education.png" alt="Education">
-                <span>Education</span>
-            </button>
-
-            <button class="industry-btn" data-sector="Health Care">
-                <img src="img/health.png" alt="Health">
-                <span>Health Care</span>
-            </button>
-
-            <button class="industry-btn" data-sector="Leisure & Hospitality">
-                <img src="img/leisure.png" alt="Leisure">
+            <!-- Leisure & Hospitality -->
+            <button class="industry-btn" data-sector="Leisure and Hospitality">
+                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+                <path d="M3 4 h18 l-9 8 z" />
+                <path d="M12 12 v7" />
+                <path d="M9 21 h6" />
+                </svg>
                 <span>Leisure & Hospitality</span>
             </button>
 
+            <!-- Transportation & Warehousing -->
+            <button class="industry-btn" data-sector="Transportation and Warehousing">
+                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+                <rect x="1" y="7" width="12" height="8" />
+                <path d="M13 10 h4 l3 3 v2 h-7" />
+                <circle cx="6" cy="17" r="2" />
+                <circle cx="17" cy="17" r="2" />
+                </svg>
+                <span>Transportation & Warehousing</span>
+            </button>
+
+            <!-- Information -->
+            <button class="industry-btn" data-sector="Information">
+                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+                <circle cx="12" cy="12" r="8" />
+                <path d="M4 12 h16" />
+                <path d="M12 4 a16 16 0 0 1 0 16" />
+                <path d="M12 4 a16 16 0 0 0 0 16" />
+                </svg>
+                <span>Information</span>
+            </button>
+
+            <!-- Mining & Logging -->
+            <button class="industry-btn" data-sector="Mining and Logging">
+                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+                <path d="M3 7 L10 4 L11 6 L4 9 Z" />
+                <path d="M21 7 L14 4 L13 6 L20 9 Z" />
+                <path d="M12 6 v14" />
+                </svg>
+                <span>Mining & Logging</span>
+            </button>
+
+            <!-- Government -->
+            <button class="industry-btn" data-sector="Government">
+                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+                <path d="M12 3 v3" />
+                <path d="M6 10 a6 4 0 0 1 12 0" />
+                <path d="M4 15 h16 v5 h-16 z" />
+                </svg>
+                <span>Government</span>
+            </button>
+
+            <!-- Utilities -->
+            <button class="industry-btn" data-sector="Utilities">
+                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+                <path d="M7 2 h10 l-2 6 h-6 z" />
+                <path d="M9 8 L5 22 M15 8 L19 22" />
+                <path d="M8 14 h8" />
+                </svg>
+                <span>Utilities</span>
+            </button>
+
         </div>
+
 
     </div>
 
