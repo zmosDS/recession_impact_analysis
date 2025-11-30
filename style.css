@@ -365,5 +365,26 @@ h1 {
         width: auto;
     }
 }
+/* =============================== */
+/* Recession selection info box    */
+/* =============================== */
+
+.rec-info-box {
+    margin-top: 0.6rem;
+    background: #f7f7f7;
+    border: 1px solid #ccc;
+    padding: 0.6rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #333;
+    display: none; /* hidden until a recession is selected */
+}
+
+/* Highlight selected button */
+#recession-choice button.selected {
+    background: #0077cc;
+    color: white;
+    border-color: #005fa3;
+}
 
 

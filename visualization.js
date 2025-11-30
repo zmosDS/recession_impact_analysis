@@ -30,6 +30,54 @@ function renderViz1(data) {
 
     const container = d3.select("#yoy-chart");
 
+    /* ------------------------------------------------------
+   Button highlight + info box logic
+    ------------------------------------------------------ */
+    const recButtons = document.querySelectorAll("#recession-choice button");
+    const infoBox = document.getElementById("rec-info-box");
+
+    function fillInfoBox(rec) {
+        if (!rec) {
+            infoBox.style.display = "none";
+            return;
+        }
+
+        let html = `
+            <strong>${rec.label}</strong><br>
+            Start: ${rec.startLabel}<br>
+        `;
+
+        if (rec.jobsLost != null) {
+            html += `Jobs lost: ${d3.format(",.0f")(rec.jobsLost * 1000)}`;
+        }
+
+        infoBox.innerHTML = html;
+        infoBox.style.display = "block";
+    }
+
+    recButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            const recId = btn.dataset.rec;
+
+            // Update selection data
+            selectedRecession = selectedRecession === recId ? null : recId;
+
+            // Update button highlight
+            recButtons.forEach(b => b.classList.remove("selected"));
+            if (selectedRecession) {
+                btn.classList.add("selected");
+            }
+
+            // Update info box
+            const rec = recessions.find(r => r.id === selectedRecession);
+            fillInfoBox(rec);
+
+            // Update chart highlight shading
+            updateRecessionSelection();
+        });
+});
+
+
     const svg = container
         .append("svg")
         .attr("width", width + margin.left + margin.right)
