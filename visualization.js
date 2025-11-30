@@ -2,14 +2,13 @@ import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm";
 
 let selectedRecession = null;
 
-/* - Load data for the YoY chart (Viz 1) - */
+/* ---------------------------------------------------------
+   Load data for Viz 1
+--------------------------------------------------------- */
 function loadViz1() {
-
     const DATA_URL = "data/viz1_yoy_change.csv";
 
     d3.csv(DATA_URL).then(data => {
-
-        // Convert strings to numbers
         data.forEach(d => {
             d.year = +d.year;
             d.value = +d.value;
@@ -20,11 +19,12 @@ function loadViz1() {
     });
 }
 
-/* - Build the YoY employment visualization - */
+/* ---------------------------------------------------------
+   Build YoY Employment Visualization
+--------------------------------------------------------- */
 function renderViz1(data) {
 
-    /* Chart layout + margins */
-    const margin = {top: 60, right: 40, bottom: 50, left: 70};
+    const margin = { top: 60, right: 40, bottom: 50, left: 70 };
     const width = 900 - margin.left - margin.right;
     const height = 500 - margin.top - margin.bottom;
 
@@ -37,43 +37,56 @@ function renderViz1(data) {
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    /* X-axis */
+    /* =====================================================
+       Tooltip – container-relative positioning
+    ===================================================== */
+    const tooltip = d3.select("#tooltip");
+
+    function tooltipPos(event) {
+        const box = container.node().getBoundingClientRect();
+        return {
+            x: event.clientX - box.left,
+            y: event.clientY - box.top
+        };
+    }
+
+    const formatJobs = d3.format(",.0f");
+
+    /* ------------------------------------------------------
+       Axes, scales
+    ------------------------------------------------------ */
     const [minYear, maxYear] = d3.extent(data, d => d.year);
 
     const x = d3.scaleLinear()
         .domain([minYear, maxYear])
         .range([0, width]);
 
-    // Tick layout: label every 5 years
     const startYear = Math.ceil(minYear / 5) * 5;
     const endYear = Math.floor(maxYear / 5) * 5;
     const yearTicks = d3.range(startYear, endYear + 1, 5);
-    const xGridTicks = yearTicks;
 
-    /*  Y-axis */
     const y = d3.scaleLinear()
-        .domain([-7, 5])       // consistent range across all recessions
+        .domain([-7, 5])
         .range([height, 0]);
 
-    /* - Recession stats for shading & tooltips - */
+    /* ------------------------------------------------------
+       Recession metadata
+    ------------------------------------------------------ */
     const recessions = [
         { id: "2001", label: "Dot-com Recession", start: 2001.25, end: 2003.25, startMonth: "Mar" },
-        { id: "2008", label: "Great Recession",    start: 2008.0,  end: 2010.0,  startMonth: "Jan" },
-        { id: "2020", label: "COVID-19 Recession", start: 2020.2,  end: 2022.2,  startMonth: "Mar" }
+        { id: "2008", label: "Great Recession", start: 2008.0, end: 2010.0, startMonth: "Jan" },
+        { id: "2020", label: "COVID-19 Recession", start: 2020.2, end: 2022.2, startMonth: "Mar" }
     ].map(r => {
-        // Tooltips & year windows
         const startYear = Math.floor(r.start);
         const yearStart = startYear;
         const yearEnd = startYear + 2;
 
-        // Estimate job loss inside the recession window
         const inRange = data.filter(d => d.year >= yearStart && d.year <= yearEnd);
-        let jobsLost = null;
 
+        let jobsLost = null;
         if (inRange.length > 0) {
             const prePoint = data.find(d => d.year === startYear - 1);
             const minValue = d3.min(inRange, d => d.value);
-
             if (prePoint && minValue != null) {
                 jobsLost = Math.max(0, prePoint.value - minValue);
             }
@@ -89,11 +102,12 @@ function renderViz1(data) {
         };
     });
 
-    // Return recession info for a given year
     const recessionForYear = year =>
         recessions.find(r => year >= r.yearStart && year <= r.yearEnd) || null;
 
-    /* - Draw recession windows behind the chart - */
+    /* ------------------------------------------------------
+       Recession shading
+    ------------------------------------------------------ */
     const recessionBands = svg.selectAll(".recession-band")
         .data(recessions)
         .enter()
@@ -104,13 +118,13 @@ function renderViz1(data) {
         .attr("y", 0)
         .attr("height", height);
 
-    /* - Gridlines - */
+    /* Gridlines */
     svg.append("g")
         .attr("class", "x-grid")
         .attr("transform", `translate(0,${height})`)
         .call(
             d3.axisBottom(x)
-                .tickValues(xGridTicks)
+                .tickValues(yearTicks)
                 .tickSize(-height)
                 .tickFormat("")
         );
@@ -126,9 +140,11 @@ function renderViz1(data) {
                 .tickFormat("")
         );
 
-    /* - Main YoY line - */
+    /* ------------------------------------------------------
+       Main YoY Line
+    ------------------------------------------------------ */
     const line = d3.line()
-        .curve(d3.curveMonotoneX)   // smooth line
+        .curve(d3.curveMonotoneX)
         .defined(d => !isNaN(d.yoy_change))
         .x(d => x(d.year))
         .y(d => y(d.yoy_change));
@@ -141,19 +157,17 @@ function renderViz1(data) {
         .attr("stroke-width", 2)
         .attr("d", line);
 
-    /* Axes (bottom + left) */
+    /* ------------------------------------------------------
+       Axes
+    ------------------------------------------------------ */
     svg.append("g")
         .attr("transform", `translate(0,${height})`)
-        .call(
-            d3.axisBottom(x)
-                .tickValues(yearTicks)
-                .tickFormat(d3.format("d"))
-        );
+        .call(d3.axisBottom(x).tickValues(yearTicks).tickFormat(d3.format("d")));
 
     svg.append("g")
         .call(d3.axisLeft(y).tickValues(yGridTicks));
 
-    /* Chart title + helper caption */
+    /* Titles, labels */
     svg.append("text")
         .attr("x", width / 2)
         .attr("y", -25)
@@ -168,7 +182,6 @@ function renderViz1(data) {
         .attr("class", "chart-caption")
         .text("Shaded areas mark recession periods starting at the downturn month and the two years that follow.");
 
-    /* Axis labels */
     svg.append("text")
         .attr("x", width / 2)
         .attr("y", height + 35)
@@ -184,7 +197,6 @@ function renderViz1(data) {
         .attr("class", "axis-label")
         .text("YoY Change (%)");
 
-    /* Zero line across the chart */
     svg.append("line")
         .attr("class", "zero-line")
         .attr("x1", 0)
@@ -192,19 +204,13 @@ function renderViz1(data) {
         .attr("y1", y(0))
         .attr("y2", y(0));
 
-    /* -----------------------------------------
-       Tooltip + recession interactions
-    ------------------------------------------ */
-    const tooltip = d3.select("#tooltip");
-    const formatJobs = d3.format(",.0f");
-    const formatMillions = value => (value / 1e6).toFixed(1);
-
-    // Update which recession band is "selected"
+    /* =====================================================
+       Tooltip Interactions — updated to use tooltipPos()
+    ===================================================== */
     const updateRecessionSelection = () => {
         recessionBands.classed("selected", d => d.id === selectedRecession);
     };
 
-    // Hover for recession shading
     recessionBands
         .on("mouseover", (event, d) => {
             let html = `<strong>${d.label}</strong>`;
@@ -214,11 +220,13 @@ function renderViz1(data) {
             }
             html += `<br/>• Start: ${d.startLabel}`;
 
+            const pos = tooltipPos(event);
+
             tooltip
                 .style("opacity", 1)
                 .html(html)
-                .style("left", (event.pageX + 10) + "px")
-                .style("top", (event.pageY - 20) + "px");
+                .style("left", (pos.x + 15) + "px")
+                .style("top", (pos.y - 20) + "px");
         })
         .on("mouseout", () => {
             if (!selectedRecession) tooltip.style("opacity", 0);
@@ -231,7 +239,9 @@ function renderViz1(data) {
 
     updateRecessionSelection();
 
-    /* - Draw year dots on the line - */
+    /* ------------------------------------------------------
+       Dots + focus dot hover
+    ------------------------------------------------------ */
     const pointData = data.filter(d => !isNaN(d.yoy_change));
 
     svg.selectAll(".dot")
@@ -243,14 +253,12 @@ function renderViz1(data) {
         .attr("cx", d => x(d.year))
         .attr("cy", d => y(d.yoy_change));
 
-    /* - Global hover to snap to nearest year - */
     const focusDot = svg.append("circle")
         .attr("class", "focus-dot")
         .attr("r", 5)
         .style("display", "none");
 
-    // Captures mouse movement
-    const hoverCapture = svg.append("rect")
+    svg.append("rect")
         .attr("class", "hover-capture")
         .attr("width", width)
         .attr("height", height)
@@ -260,15 +268,14 @@ function renderViz1(data) {
 
             const [mx] = d3.pointer(event);
 
-            // Hide when cursor leaves chart area
             if (mx < 0 || mx > width) {
                 focusDot.style("display", "none");
                 if (!selectedRecession) tooltip.style("opacity", 0);
                 return;
             }
 
-            // Find nearest year to cursor
             const yearAtCursor = x.invert(mx);
+
             const nearest = pointData.reduce((best, d) => {
                 const dist = Math.abs(d.year - yearAtCursor);
                 return dist < best.dist ? { d, dist } : best;
@@ -276,16 +283,14 @@ function renderViz1(data) {
 
             if (!nearest) return;
 
-            // Move focus dot to nearest point
             focusDot
                 .style("display", null)
                 .attr("cx", x(nearest.year))
                 .attr("cy", y(nearest.yoy_change));
 
-            // Add recession info 
             const rec = recessionForYear(nearest.year);
-            let recHtml = "";
 
+            let recHtml = "";
             if (rec) {
                 recHtml = `<br/><br/><strong>${rec.label}</strong>`;
                 if (rec.jobsLost != null) {
@@ -298,6 +303,8 @@ function renderViz1(data) {
             const yoy = nearest.yoy_change.toFixed(1);
             const totalJobs = formatJobs(nearest.value * 1000);
 
+            const pos = tooltipPos(event);
+
             tooltip
                 .style("opacity", 1)
                 .html(
@@ -306,8 +313,8 @@ function renderViz1(data) {
                     `<br/>• Total jobs: ${totalJobs}` +
                     recHtml
                 )
-                .style("left", (event.pageX + 10) + "px")
-                .style("top", (event.pageY - 20) + "px");
+                .style("left", (pos.x + 15) + "px")
+                .style("top", (pos.y - 20) + "px");
         })
         .on("mouseout", () => {
             focusDot.style("display", "none");
@@ -315,7 +322,6 @@ function renderViz1(data) {
         });
 }
 
-/* - Init: call Viz 1 (others added later) - */
+/* Init */
 loadViz1();
-// loadViz2();
-// loadViz3();
+
