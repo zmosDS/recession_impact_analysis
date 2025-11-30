@@ -324,4 +324,3 @@ function renderViz1(data) {
 
 /* Init */
 loadViz1();
-
