@@ -159,15 +159,16 @@ h1 {
 
 .viz-placeholder {
     width: 100%;
-    height: 300px;
+    min-height: 300px;     /* allow the chart to be taller if needed */
     background: #f3f3f3;
     border: 1px dashed #aaa;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    padding: 10px;         /* optional: some breathing room */
+    display: block;        /* no flexbox centering */
     color: #777;
     font-style: italic;
+    overflow: hidden;      /* so nothing spills over the buttons */
 }
+
 
 /* ========================================================= */
 /* ================ SLIDESHOW STYLES ======================= */
@@ -446,4 +447,11 @@ h1 {
   margin: 20px auto;
   padding: 20px;
   object-fit: contain;
+}
+
+#recession-period-choice button.selected,
+#recovery-choice button.selected {
+    background: #0077cc;
+    color: white;
+    border-color: #005fa3;
 }
