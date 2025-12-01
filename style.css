@@ -435,5 +435,22 @@ h1 {
     object-fit: contain;
 }
 
+/* Final panel mini-chart: force white background */
+#final-viz svg {
+  background-color: #fff;
+}
+
+.recovery-band {
+  fill: rgba(1255, 255, 255, 1); /* very light purple */
+}
+
+#final-viz {
+width: 100%;
+  margin-top: 1.2rem;
+  display: block;
+  background: none;
+  border: none;
+}
+
 
 
