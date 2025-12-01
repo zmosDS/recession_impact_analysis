@@ -372,3 +372,19 @@ function renderViz1(data) {
 
 /* Init */
 loadViz1();
+
+
+// ==============================
+// Frame 2: Industry button select
+// ==============================
+document.querySelectorAll(".industry-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+        // Allow one selected at a time
+        document.querySelectorAll(".industry-btn").forEach(b => 
+            b.classList.remove("selected")
+        );
+
+        // Highlight clicked one
+        btn.classList.add("selected");
+    });
+});
