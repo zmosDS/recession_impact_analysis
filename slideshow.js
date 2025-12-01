@@ -62,11 +62,11 @@ window.addEventListener("DOMContentLoaded", () => {
             break;
 
         case 2:
-            // Frame 2: Industry grid selection
+            // Frame 2: Recession profile visualization
             break;
 
         case 3:
-            // Frame 3: Recession profile visualization
+            // Frame 3: Industry grid selection
             break;
 
         case 4:
@@ -124,8 +124,8 @@ window.addEventListener("DOMContentLoaded", () => {
   // --------------------------------------------------------
   if (restartButton) {
     restartButton.addEventListener("click", () => {
-      // Frame index 2 = third frame = industry selection
-      showFrame(2);
+      // Frame index 3 = industry selection
+      showFrame(3);
     });
   }
 

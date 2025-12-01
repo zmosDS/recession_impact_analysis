@@ -79,9 +79,32 @@
     </div>
 
     <!-- ============================== -->
-    <!-- FRAME 2 — AND #2               -->
+    <!-- FRAME 2 — BUT #1 (Recession Profile) -->
     <!-- ============================== -->
     <div class="frame" data-frame="2">
+        <h2 class="story-heading">BUT: No two recessions behave the same.</h2>
+        <p class="story-text">
+            The recessions of 2001, 2008, and 2020 were caused by different shocks and produced 
+            different patterns of job loss. Some were slow burns; others were sudden free-falls.
+        </p>
+
+        <p class="story-prompt">
+            <strong>Which recession period do you want to select?</strong>
+        </p>
+
+        <div class="choice-row" id="recession-period-choice">
+            <button data-rec="2001">2001</button>
+            <button data-rec="2008">2008</button>
+            <button data-rec="2020">2020</button>
+        </div>
+
+        <div id="recession-profile-viz" class="viz-placeholder"></div>
+    </div>
+
+    <!-- ============================== -->
+    <!-- FRAME 3 — AND #2               -->
+    <!-- ============================== -->
+    <div class="frame" data-frame="3">
         <h2 class="story-heading">AND: The economy is made of many industries.</h2>
         <p class="story-text">
             Behind the big national trend are dozens of industries, each with its own employment cycle.
@@ -246,29 +269,6 @@
         </div>
 
 
-    </div>
-
-    <!-- ============================== -->
-    <!-- FRAME 3 — BUT #1               -->
-    <!-- ============================== -->
-    <div class="frame" data-frame="3">
-        <h2 class="story-heading">BUT: No two recessions behave the same.</h2>
-        <p class="story-text">
-            The recessions of 2001, 2008, and 2020 were caused by different shocks and produced 
-            different patterns of job loss. Some were slow burns; others were sudden free-falls.
-        </p>
-
-                    <!-- NEW: recession period selection for this page -->
-            <p class="story-prompt">
-                <strong>Which recession period do you want to select?</strong>
-            </p>
-            <div class="choice-row" id="recession-period-choice">
-                <button data-rec="2001">2001</button>
-                <button data-rec="2008">2008</button>
-                <button data-rec="2020">2020</button>
-            </div>
-
-        <div id="recession-profile-viz" class="viz-placeholder"></div>
     </div>
 
     <!-- ============================== -->
