@@ -435,5 +435,15 @@ h1 {
     object-fit: contain;
 }
 
-
-
+/* ========================================================= */
+/* TEMPORARY Static Viz                                      */
+/* ========================================================= */
+.static-viz {
+  width: 90%;
+  max-width: 850px;
+  height: auto;
+  display: block;
+  margin: 20px auto;
+  padding: 20px;
+  object-fit: contain;
+}
