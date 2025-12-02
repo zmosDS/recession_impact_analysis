@@ -479,3 +479,20 @@ h1 {
     fill: #444;
 }
 
+.title-authors {
+    position: absolute;
+    bottom: 2.5rem;        /* distance from bottom of the frame */
+    width: 100%;
+    text-align: center;
+    font-size: 1rem;
+    color: #666;
+    letter-spacing: 0.3px;
+    opacity: 0.9;
+}
+
+.title-authors p {
+    margin: 0;
+    padding: 0;
+}
+
+
