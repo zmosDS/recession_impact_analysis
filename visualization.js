@@ -3,7 +3,7 @@ import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm";
 let selectedRecession = null;       // Frame 1 selection (for shading/info)
 let industryRows = [];              // full CSV from industry_yoy.csv
 let totalNonfarmRows = [];          // subset for Total Nonfarm, used in Frame 3
-let selectedIndustry = null;        // chosen industry (Frame 2)
+let selectedIndustry = null;        // chosen industry (Frame 3)
 let selectedRecoveryId = null;      // 2001 / 2008 / 2020 in Frame 6
 
 // Frame 3: single selected recession (like Frame 6)
@@ -117,7 +117,11 @@ function loadViz1() {
       d.yoy_change = +d.yoy_change;
     });
 
+    // Frame 1 – fixed-width chart with sidebar
     renderViz1(data);
+
+    // Frame 2 – full-width chart (duplicate, different container)
+    renderViz2(data);
   });
 }
 
@@ -127,6 +131,7 @@ function renderViz1(data) {
   const height = 500 - margin.top - margin.bottom;
 
   const container = d3.select("#yoy-chart");
+  container.selectAll("*").remove();
 
   const recButtons = document.querySelectorAll("#recession-choice button");
   const infoBox = document.getElementById("rec-info-box");
@@ -431,6 +436,292 @@ function renderViz1(data) {
 }
 
 /* =========================================================
+   VIZ 2: YoY Employment (All Industries) – Frame 2 (WIDE)
+========================================================= */
+
+function renderViz2(data) {
+  // ===== Historical Event Annotations (absolute coordinates + manual offsets) =====
+  const eventAnnotations = [
+    {
+      year: 2000 + 2 / 9,  // Mar 2000
+      yoy: 1.9,
+      label: "Dot Com Boom",
+      dx: -15,
+      dy: -35
+    },
+    {
+      year: 2001 + 8 / 12,  // Sep 2001
+      yoy: -0.9,
+      label: "9/11 Attacks",
+      dx: -40,
+      dy: 15
+    },
+    {
+      year: 2008 + 8 / 12,  // Sep 2008
+      yoy: -3.6,
+      label: "Lehman collapses",
+      dx: -135,
+      dy: 12
+    },
+    {
+      year: 2020 + 1 / 12,  // Feb 2020
+      yoy: -5.8,
+      label: "Pandemic Declared",
+      dx: -20,
+      dy: 10
+    },
+    {
+      year: 2020 + 2 / 12,  // Mar 2020
+      yoy: -5,
+      label: "US COVID Lockdowns",
+      dx: 5,
+      dy: 0
+    }
+  ];
+
+  const container = d3.select("#yoy-chart-frame2");
+  if (container.empty()) return;
+
+  // Clear any existing SVG
+  container.selectAll("*").remove();
+
+  // Measure a visible container so width is reasonable
+  const hostEl =
+    document.getElementById("frame-container") ||
+    container.node().parentElement;
+
+  let containerWidth = hostEl
+    ? hostEl.getBoundingClientRect().width
+    : 900;
+
+  if (!containerWidth || containerWidth <= 0) {
+    containerWidth = 900; // fallback
+  }
+
+  const margin = { top: 60, right: 40, bottom: 50, left: 70 };
+  const width = containerWidth - margin.left - margin.right;
+  const height = 500 - margin.top - margin.bottom;
+
+  const svg = container
+    .append("svg")
+    .attr("width", containerWidth)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+  const formatJobs = d3.format(",.0f");
+
+  const [minYear, maxYear] = d3.extent(data, d => d.year);
+
+  const x = d3.scaleLinear()
+    .domain([minYear, maxYear])
+    .range([0, width]);
+
+  const startYear = Math.ceil(minYear / 5) * 5;
+  const endYear = Math.floor(maxYear / 5) * 5;
+  const yearTicks = d3.range(startYear, endYear + 1, 5);
+
+  const y = d3.scaleLinear()
+    .domain([-7, 5])
+    .range([height, 0]);
+
+  const recessions = [
+    { id: "2001", label: "Dot-com Recession", start: 2001.25, end: 2003.25, startMonth: "Mar" },
+    { id: "2008", label: "Great Recession", start: 2008.0, end: 2010.0, startMonth: "Jan" },
+    { id: "2020", label: "COVID-19 Recession", start: 2020.2, end: 2022.2, startMonth: "Mar" }
+  ].map(r => {
+    const sYear = Math.floor(r.start);
+    const yearStart = sYear;
+    const yearEnd = sYear + 2;
+
+    const inRange = data.filter(d => d.year >= yearStart && d.year <= yearEnd);
+
+    let jobsLost = null;
+    if (inRange.length > 0) {
+      const prePoint = data.find(d => d.year === sYear - 1);
+      const minValue = d3.min(inRange, d => d.value);
+      if (prePoint && minValue != null) {
+        jobsLost = Math.max(0, prePoint.value - minValue);
+      }
+    }
+
+    return {
+      ...r,
+      startYear: sYear,
+      yearStart,
+      yearEnd,
+      startLabel: `${r.startMonth} ${sYear}`,
+      jobsLost
+    };
+  });
+
+  const recessionForYear = year =>
+    recessions.find(r => year >= r.yearStart && year <= r.yearEnd) || null;
+
+  // Recession shading
+  const recessionBands = svg.selectAll(".recession-band")
+    .data(recessions)
+    .enter()
+    .append("rect")
+    .attr("class", "recession-band")
+    .attr("x", d => x(d.start))
+    .attr("width", d => x(d.end) - x(d.start))
+    .attr("y", 0)
+    .attr("height", height);
+
+  // Recession labels
+  svg.selectAll(".recession-label")
+    .data(recessions)
+    .enter()
+    .append("text")
+    .attr("class", "recession-label")
+    .attr("x", d => x(d.start) + (x(d.end) - x(d.start)) / 2)
+    .attr("y", 20)
+    .attr("text-anchor", "middle")
+    .attr("font-size", "0.9rem")
+    .attr("fill", "black")
+    .text(d => d.label);
+
+  // Grid lines
+  svg.append("g")
+    .attr("class", "x-grid")
+    .attr("transform", `translate(0,${height})`)
+    .call(
+      d3.axisBottom(x)
+        .tickValues(yearTicks)
+        .tickSize(-height)
+        .tickFormat("")
+    );
+
+  const yGridTicks = d3.range(-7, 5 + 1, 1);
+
+  svg.append("g")
+    .attr("class", "y-grid")
+    .call(
+      d3.axisLeft(y)
+        .tickValues(yGridTicks)
+        .tickSize(-width)
+        .tickFormat("")
+    );
+
+  // YoY line
+  const line = d3.line()
+    .curve(d3.curveMonotoneX)
+    .defined(d => !isNaN(d.yoy_change))
+    .x(d => x(d.year))
+    .y(d => y(d.yoy_change));
+
+  svg.append("path")
+    .datum(data)
+    .attr("class", "yoy-line")
+    .attr("fill", "none")
+    .attr("stroke", "#0077CC")
+    .attr("stroke-width", 2)
+    .attr("d", line);
+
+  // Axes
+  svg.append("g")
+    .attr("transform", `translate(0,${height})`)
+    .call(d3.axisBottom(x).tickValues(yearTicks).tickFormat(d3.format("d")));
+
+  svg.append("g")
+    .call(d3.axisLeft(y).tickValues(yGridTicks));
+
+  // Titles & labels
+  svg.append("text")
+    .attr("x", width / 2)
+    .attr("y", -25)
+    .attr("text-anchor", "middle")
+    .attr("class", "chart-title")
+    .text("Year-over-Year Employment Change (All Industries)");
+
+  svg.append("text")
+    .attr("x", width / 2)
+    .attr("y", -8)
+    .attr("text-anchor", "middle")
+    .attr("class", "chart-caption")
+    .text("Shaded areas mark recession periods starting at the downturn month and the two years that follow.");
+
+  svg.append("text")
+    .attr("x", width / 2)
+    .attr("y", height + 35)
+    .attr("text-anchor", "middle")
+    .attr("class", "axis-label")
+    .text("Year");
+
+  svg.append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("x", -height / 2)
+    .attr("y", -45)
+    .attr("text-anchor", "middle")
+    .attr("class", "axis-label")
+    .text("YoY Change (%)");
+
+  svg.append("line")
+    .attr("class", "zero-line")
+    .attr("x1", 0)
+    .attr("x2", width)
+    .attr("y1", y(0))
+    .attr("y2", y(0));
+
+  // =============================================================
+  // DRAW ANNOTATION BOXES AT SPECIFIC COORDINATES (with dx/dy)
+  // =============================================================
+  const fontSize = 12;
+  const approxCharWidth = 7;
+  const paddingX = 8;
+  const paddingY = 4;
+
+  eventAnnotations.forEach(ev => {
+    const px = x(ev.year);
+    const py = y(ev.yoy);
+
+    const textWidth  = ev.label.length * approxCharWidth;
+    const textHeight = fontSize;
+
+    const g = svg.append("g")
+      .attr("class", "annotation")
+      .attr(
+        "transform",
+        `translate(${px + (ev.dx || 0)}, ${py + (ev.dy || 0)})`
+      );
+
+    // Box
+    g.append("rect")
+      .attr("width",  textWidth + paddingX * 2)
+      .attr("height", textHeight + paddingY * 2)
+      .attr("rx", 6)
+      .attr("ry", 6)
+      .attr("fill", "#fff")
+      .attr("stroke", "#444")
+      .attr("stroke-width", 1.1);
+
+    // Label text
+    g.append("text")
+      .attr("x", paddingX)
+      .attr("y", paddingY + textHeight - 2)
+      .attr("font-size", fontSize)
+      .attr("fill", "#111")
+      .text(ev.label);
+
+    // Tiny dot marking the event point
+    svg.append("circle")
+      .attr("cx", px)
+      .attr("cy", py)
+      .attr("r", 3)
+      .attr("fill", "#444");
+  });
+
+  // Keep shading consistent with global selectedRecession
+  const updateRecessionSelectionShading = () => {
+    recessionBands.classed("selected", d => d.id === selectedRecession);
+  };
+  updateRecessionSelectionShading();
+}
+
+
+
+/* =========================================================
    INDUSTRY STORY DATA LOADING
 ========================================================= */
 
@@ -542,7 +833,7 @@ function updateRecessionProfileViz() {
     .attr("cx", d => x(d.date))
     .attr("cy", d => y(d.yoy_change));
 
-  // ---------- X AXIS: explicit months (fixes 2020 labels) ----------
+  // ---------- X AXIS: explicit months ----------
   const monthTicks = [];
   let yCur = recDef.startYear;
   let mCur = recDef.startMonth;
@@ -597,7 +888,6 @@ function updateRecessionProfileViz() {
     .attr("class", "axis-label")
     .text("Year-Over-Year Employment Change (%)");
 }
-
 
 /* =========================================================
    FINAL FRAME (Frame 6): “Your Industry's Story”
@@ -778,7 +1068,7 @@ function updateFinalIndustryStory() {
    WIRING: Industry selection + Recovery choice + Frame 3
 ========================================================= */
 
-// ---------- Frame 2 – industry choice ----------
+// ---------- Frame 3 – industry choice ----------
 document.querySelectorAll(".industry-btn").forEach(btn => {
   btn.addEventListener("click", () => {
     // Visual state
@@ -894,11 +1184,4 @@ if (restartBtn) {
 ========================================================= */
 loadViz1();
 loadIndustryStoryData();
-
-
-
-
-
-
-
 
