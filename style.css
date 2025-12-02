@@ -455,3 +455,27 @@ h1 {
     color: white;
     border-color: #005fa3;
 }
+
+#yoy-chart-frame2 {
+    width: 100%;
+}
+
+/* ======================================= */
+/* Frame 2 Event Annotation Styling         */
+/* ======================================= */
+
+.annotation rect {
+    fill: white;
+    stroke: #444;
+    stroke-width: 1.2px;
+}
+
+.annotation text {
+    fill: #111;
+    font-size: 12px;
+}
+
+.annotation circle {
+    fill: #444;
+}
+
