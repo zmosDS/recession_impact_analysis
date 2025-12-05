@@ -81,6 +81,11 @@ window.addEventListener("DOMContentLoaded", () => {
             // Frame 6: Personalized wrap-up
             fillFinalTakeaway();
             break;
+
+         case 7:
+            // NEW: render horizon-style recovery comparison
+            renderRecoveryBarViz();
+            break;
     }
   }
 
