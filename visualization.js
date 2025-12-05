@@ -457,12 +457,26 @@ function renderViz2(data) {
       dy: 15
     },
     {
-      year: 2008 + 8 / 12,  // Sep 2008
-      yoy: -3.6,
-      label: "Lehman collapses",
-      dx: -135,
-      dy: 12
+        year: 2006 + 5/12,   // June 2006
+        yoy: 1.52,           // adjust after seeing its real YoY value
+        label: "Housing Bubble Bursts",
+        dx: -60,
+        dy: -25
+},
+{
+    year: 2008 + 8 / 12,  // Sep 2008
+    yoy: -3.6,
+    label: "Lehman collapses",
+    dx: -135,
+    dy: 12
     },
+    {
+        year: 2010 + 6/12,   // July 2010
+        yoy: 0.24,           // adjust after seeing its real YoY value
+        label: "Dodd-Frank Act Signed",
+        dx: -40,
+        dy: -25
+},
     {
       year: 2020 + 1 / 12,  // Feb 2020
       yoy: -5.8,
@@ -476,7 +490,14 @@ function renderViz2(data) {
       label: "US COVID Lockdowns",
       dx: 5,
       dy: 0
-    }
+    },
+        {
+        year: 2021 + 2/12,  // March 2021
+        yoy: 3.119,           // adjust after seeing its real YoY value
+        label: "American Rescue Plan Signed",
+        dx: -40,
+        dy: -20
+}
   ];
 
   const container = d3.select("#yoy-chart-frame2");
@@ -852,10 +873,12 @@ function updateRecessionProfileViz() {
 
   const xAxis = d3.axisBottom(x)
     .tickValues(monthTicks)
-    .tickFormat(d3.timeFormat("%b %Y"));
+    .tickFormat(d3.timeFormat("%b %Y"))
+    .tickSize(8);
 
   const yAxis = d3.axisLeft(y)
     .ticks(6)
+    .ticksize(8)
     .tickFormat(d => `${d}%`);
 
   g.append("g")
@@ -886,13 +909,12 @@ function updateRecessionProfileViz() {
     .attr("y", -50)
     .attr("text-anchor", "middle")
     .attr("class", "axis-label")
-    .text("Year-Over-Year Employment Change (%)");
+    .text("YoY Employment Change (%)");
 }
 
 /* =========================================================
    FINAL FRAME (Frame 6): “Your Industry's Story”
 ========================================================= */
-
 function updateFinalIndustryStory() {
   const finalBoxEl = document.getElementById("final-viz");
   const takeawayBox = document.getElementById("final-personal-takeaway");
@@ -965,10 +987,10 @@ function updateFinalIndustryStory() {
 
   const yoyFmt = v => `${fmtPct(v)}%`;
 
-  const margin = { top: 85, right: 10, bottom: 45, left: 70 };
+  const margin = { top: 85, right: 10, bottom: 60, left: 70 };
   const boxWidth = finalBoxEl.clientWidth || 900;
   const width = boxWidth - margin.left - margin.right;
-  const height = 260;
+  const height = 390;
 
   const svg = finalBox
     .append("svg")
@@ -994,6 +1016,41 @@ function updateFinalIndustryStory() {
     .x(d => x(d.monthsSinceStart))
     .y(d => y(d.yoy_change));
 
+  // --------------------------------------------------
+  // GRID (matching Frame 2 styling via .x-grid/.y-grid)
+  // --------------------------------------------------
+  const step = 6;
+  const xTicks = d3.range(0, maxMonth + 1, step);
+  const yTicks = y.ticks(6);
+
+  g.append("g")
+    .attr("class", "x-grid")
+    .attr("transform", `translate(0,${height})`)
+    .call(
+      d3.axisBottom(x)
+        .tickValues(xTicks)
+        .tickSize(-height)
+        .tickFormat("")
+    );
+
+  g.append("g")
+    .attr("class", "y-grid")
+    .call(
+      d3.axisLeft(y)
+        .tickValues(yTicks)
+        .tickSize(-width)
+        .tickFormat("")
+    );
+
+  // Zero line (same class as other frames)
+  g.append("line")
+    .attr("class", "zero-line")
+    .attr("x1", 0)
+    .attr("x2", width)
+    .attr("y1", y(0))
+    .attr("y2", y(0));
+
+  // Main line
   g.append("path")
     .datum(windowRows)
     .attr("class", "industry-line")
@@ -1002,6 +1059,7 @@ function updateFinalIndustryStory() {
     .attr("stroke-width", 2)
     .attr("d", line);
 
+  // Dots
   g.selectAll(".recovery-dot")
     .data(windowRows)
     .enter()
@@ -1011,27 +1069,36 @@ function updateFinalIndustryStory() {
     .attr("cx", d => x(d.monthsSinceStart))
     .attr("cy", d => y(d.yoy_change));
 
-  const step = 6;
-  const xTicks = d3.range(0, maxMonth + 1, step);
-  const xAxis = d3.axisBottom(x).tickValues(xTicks);
-  const yAxis = d3.axisLeft(y).ticks(6).tickFormat(d => `${d}%`);
+  // Axes
+ const xAxis = d3.axisBottom(x)
+  .tickValues(xTicks);
 
-  g.append("g")
-    .attr("transform", `translate(0,${height})`)
-    .call(xAxis);
+const yAxis = d3.axisLeft(y)
+  .ticks(6)
+  .tickFormat(d => `${d}%`);
 
-  g.append("g").call(yAxis);
+// X axis
+const xAxisG = g.append("g")
+  .attr("transform", `translate(0,${height})`)
+  .call(xAxis);
 
-  g.append("line")
-    .attr("class", "zero-line")
-    .attr("x1", 0)
-    .attr("x2", width)
-    .attr("y1", y(0))
-    .attr("y2", y(0));
+// Y axis
+const yAxisG = g.append("g")
+  .call(yAxis);
+
+// 🔹 Make tick labels larger + match font
+xAxisG.selectAll("text")
+  .style("font-size", "0.9rem")   // bump this up if you want bigger
+  .style("font-family", "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif");
+
+yAxisG.selectAll("text")
+  .style("font-size", "0.9rem")
+  .style("font-family", "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif");
 
   const startLabel = `${monthNames[recDef.startMonth - 1]} ${recDef.startYear}`;
   const endLabel = `${monthNames[recDef.endMonth - 1]} ${recDef.endYear}`;
 
+  // Title
   g.append("text")
     .attr("x", width / 2)
     .attr("y", -25)
@@ -1041,19 +1108,22 @@ function updateFinalIndustryStory() {
       `${selectedIndustry}: Year-Over-Year Employment Change During Recovery (${startLabel} – ${endLabel})`
     );
 
+  // X axis label (already had class)
   g.append("text")
     .attr("x", width / 2)
-    .attr("y", height + 30)
+    .attr("y", height + 50)
     .attr("text-anchor", "middle")
     .attr("class", "axis-label")
     .text("Months After Recovery Period Started");
 
+  // Y axis label — NOW with .axis-label class to match Frame 2
   g.append("text")
     .attr("transform", "rotate(-90)")
     .attr("x", -height / 2)
-    .attr("y", -50)
+    .attr("y", -60)
     .attr("text-anchor", "middle")
-    .text("Year-Over-Year Employment Change (%)");
+    .attr("class", "axis-label")
+    .text("YoY Employment Change (%)");
 
   let verb = "changed";
   if (change > 0.5) verb = "strengthened";
@@ -1062,6 +1132,261 @@ function updateFinalIndustryStory() {
   takeawayBox.textContent =
     `In ${selectedIndustry}, employment ${verb} over this recovery period. ` +
     `Between ${startLabel} and ${endLabel}, year-over-year job growth moved from ${yoyFmt(startRate)} to ${yoyFmt(endRate)}.`;
+}
+/* =========================================================
+   FRAME 7: Bar chart — Jobs gained by industry
+========================================================= */
+function renderRecoveryBarViz(recIdOverride = null) {
+  const containerEl = document.getElementById("recovery-bar-viz");
+  if (!containerEl) return;
+
+  const takeawayEl = document.getElementById("recovery-bar-takeaway");
+  if (takeawayEl) takeawayEl.textContent = "";  // clear old text
+
+  const container = d3.select(containerEl);
+  container.selectAll("*").remove();
+
+  if (!industryRows || industryRows.length === 0) {
+    containerEl.innerHTML = "<p>Loading industry data…</p>";
+    return;
+  }
+
+  // Use the same recovery windows as Frame 6
+  const activeRecId = recIdOverride || "2008";
+  const recDef = INDUSTRY_RECOVERIES.find(r => r.id === activeRecId);
+  if (!recDef) {
+    containerEl.innerHTML = "<p>No recovery window defined for that recession.</p>";
+    return;
+  }
+
+  const startT = ym(recDef.startYear, recDef.startMonth);
+  const endT   = ym(recDef.endYear,   recDef.endMonth);
+
+  // Industries should match the options from the selection grid (Frame 3)
+  const industryButtons = Array.from(document.querySelectorAll(".industry-btn"));
+  const allowedKeys = industryButtons.map(btn =>
+    (btn.dataset.sector && btn.dataset.sector.trim().length > 0)
+      ? btn.dataset.sector.trim()
+      : btn.textContent.trim()
+  );
+
+  // Map: normalized CSV name → button label
+  const labelByNormName = new Map(
+    allowedKeys.map(label => [normalizeName(label), label])
+  );
+
+  const selectedNorm = selectedIndustry ? normalizeName(selectedIndustry) : null;
+
+  // Group rows in the recovery window by industry name from the CSV
+  const byIndustry = d3.group(
+    industryRows.filter(d => d.t >= startT && d.t <= endT),
+    d => d.industry
+  );
+
+  const bars = [];
+
+  for (const [csvIndustryName, rows] of byIndustry.entries()) {
+    const normCsv = normalizeName(csvIndustryName);
+    const label = labelByNormName.get(normCsv);
+    if (!label) continue; // skip industries that don't have a button
+
+    const sorted = rows
+      .filter(d => !isNaN(d.value))
+      .sort((a, b) => d3.ascending(a.t, b.t));
+
+    if (sorted.length < 2) continue;
+
+    // value is thousands of jobs → convert to raw jobs
+    const startValJobs = sorted[0].value * 1000;
+    const endValJobs   = sorted[sorted.length - 1].value * 1000;
+    const jobsGained   = endValJobs - startValJobs;
+
+    bars.push({
+      industryLabel: label,
+      jobsGained,
+      isSelected: selectedNorm && normalizeName(label) === selectedNorm
+    });
+  }
+
+  if (!bars.length) {
+    containerEl.innerHTML =
+      "<p>Not enough industry data to compute jobs gained for this recovery.</p>";
+    return;
+  }
+
+  // Order barplot by jobs gained, descending
+  bars.sort((a, b) => d3.descending(a.jobsGained, b.jobsGained));
+  const industries = bars.map(d => d.industryLabel);
+
+  // Y domain & ticks at 500,000 jobs
+  const rawMaxGain = d3.max(bars, d => d.jobsGained);
+  const rawMinGain = d3.min(bars, d => d.jobsGained);
+  const tickStep = 500000; // 50k jobs
+
+  let yMax = Math.ceil(rawMaxGain / tickStep) * tickStep;
+  let yMin = Math.floor(rawMinGain / tickStep) * tickStep;
+
+  // Always include 0 on the axis
+  if (yMax < 0) yMax = 0;
+  if (yMin > 0) yMin = 0;
+
+  const margin = { top: 60, right: 20, bottom: 160, left: 130 };
+  const boxWidth = containerEl.clientWidth || 900;
+  const width = boxWidth - margin.left - margin.right;
+  const height = 360;
+
+  const svg = container
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom);
+
+  const g = svg.append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+  // X: industries in sorted order
+  const x = d3.scaleBand()
+    .domain(industries)
+    .range([0, width])
+    .padding(0.2);
+
+  const y = d3.scaleLinear()
+    .domain([yMin, yMax])
+    .range([height, 0]);
+
+  const yTicks = d3.range(yMin, yMax + tickStep, tickStep);
+
+  // Y axis
+  const yAxis = d3.axisLeft(y)
+    .tickValues(yTicks)
+    .tickFormat(d => d3.format(",")(d));
+
+  const yAxisG = g.append("g").call(yAxis);
+  yAxisG.selectAll("text")
+    .style("font-size", "0.85rem");
+
+  // X axis
+  const xAxis = d3.axisBottom(x);
+  const xAxisG = g.append("g")
+    .attr("transform", `translate(0,${height})`)
+    .call(xAxis);
+
+xAxisG.selectAll("text")
+  .style("font-size", "0.8rem")
+  .attr("text-anchor", "end")
+  .attr("dx", "-0.5em")          // further to the right
+  .attr("dy", "1.25em")          // tiny vertical tweak
+  .attr("transform", "translate(20,0) rotate(-28)");
+
+  // Zero line
+  g.append("line")
+    .attr("class", "zero-line")
+    .attr("x1", 0)
+    .attr("x2", width)
+    .attr("y1", y(0))
+    .attr("y2", y(0));
+
+  // Bars (highlight selected industry)
+  g.selectAll(".recovery-bar")
+    .data(bars)
+    .enter()
+    .append("rect")
+    .attr("class", "recovery-bar")
+    .attr("x", d => x(d.industryLabel))
+    .attr("width", x.bandwidth())
+    .attr("y", d => d.jobsGained >= 0 ? y(d.jobsGained) : y(0))
+    .attr("height", d => Math.abs(y(d.jobsGained) - y(0)))
+    .attr("fill", d => {
+      if (d.isSelected) {
+        // highlighted version of the normal colors
+        return d.jobsGained >= 0 ? "#1E88E5" : "#E53935";
+      }
+      return d.jobsGained >= 0 ? "#4CAF50" : "#D32F2F";
+    })
+    .attr("stroke", d => d.isSelected ? "#000" : "none")
+    .attr("stroke-width", d => d.isSelected ? 1.5 : 0);
+
+  // Bar labels
+  g.selectAll(".bar-label")
+    .data(bars)
+    .enter()
+    .append("text")
+    .attr("class", "bar-label")
+    .attr("x", d => x(d.industryLabel) + x.bandwidth() / 2)
+    .attr("y", d => d.jobsGained >= 0 ? y(d.jobsGained) - 6 : y(d.jobsGained) + 14)
+    .attr("text-anchor", "middle")
+    .style("font-size", "0.7rem")
+    .text(d => d3.format("+,.0f")(d.jobsGained));
+
+  const startLabel = `${monthNames[recDef.startMonth - 1]} ${recDef.startYear}`;
+  const endLabel   = `${monthNames[recDef.endMonth - 1]} ${recDef.endYear}`;
+
+  // Chart title
+  g.append("text")
+    .attr("x", width / 2)
+    .attr("y", -10)
+    .attr("text-anchor", "middle")
+    .attr("class", "chart-title")
+    .text(`Jobs Gained by Industry During ${recDef.label} Recovery`);
+
+  // Subtitle with dates (on its own line)
+  g.append("text")
+    .attr("x", width / 2)
+    .attr("y", 12)
+    .attr("text-anchor", "middle")
+    .attr("class", "axis-label")
+    .text(`(${startLabel} – ${endLabel})`);
+
+  // X-axis title
+  g.append("text")
+    .attr("x", width / 2)
+    .attr("y", height + 95)
+    .attr("text-anchor", "middle")
+    .attr("class", "axis-label")
+    .text("Industry");
+
+  // Y-axis title
+  g.append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("x", -height / 2)
+    .attr("y", -85)
+    .attr("text-anchor", "middle")
+    .attr("class", "axis-label")
+    .text("Number of jobs gained");
+
+  // ----------------------------
+  // Personalized annotation text
+  // ----------------------------
+  if (takeawayEl && selectedIndustry) {
+    const selectedBar = bars.find(b => b.isSelected);
+    if (selectedBar) {
+      const jobs = selectedBar.jobsGained;
+      const absJobs = Math.abs(jobs);
+
+      let magnitude;
+      if (absJobs >= 1_000_000) {
+        magnitude = `${(absJobs / 1_000_000).toFixed(1)}M`;
+      } else if (absJobs >= 1000) {
+        magnitude = `${(absJobs / 1000).toFixed(1)}k`;
+      } else {
+        magnitude = d3.format(",.0f")(absJobs);
+      }
+
+      if (jobs > 0) {
+        takeawayEl.textContent =
+          `${selectedIndustry} gained about ${magnitude} jobs over the ${recDef.label} recovery — a strong rebound from the downturn.`;
+      } else if (jobs < 0) {
+        takeawayEl.textContent =
+          `${selectedIndustry} is still down about ${magnitude} jobs compared with the start of the ${recDef.label} recovery — a sign of a lasting structural change.`;
+      } else {
+        takeawayEl.textContent =
+          `${selectedIndustry} ended the ${recDef.label} recovery with roughly the same number of jobs it started with.`;
+      }
+    } else {
+      // industry selected but not in this recovery window
+      takeawayEl.textContent =
+        `Your selected industry (${selectedIndustry}) doesn’t appear in this recovery window, so we can’t compute its job gains here.`;
+    }
+  }
 }
 
 /* =========================================================
@@ -1122,6 +1447,23 @@ recoveryButtons.forEach(btn => {
     });
 
     updateFinalIndustryStory();
+  });
+});
+
+// ---------- Frame 7 – recovery bar buttons ----------
+const recoveryBarButtons = Array.from(
+  document.querySelectorAll("#recovery-bar-choice button")
+);
+
+recoveryBarButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    const recId = btn.dataset.rec;
+
+    recoveryBarButtons.forEach(b =>
+      b.classList.toggle("selected", b === btn)
+    );
+
+    renderRecoveryBarViz(recId);
   });
 });
 

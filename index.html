@@ -328,6 +328,34 @@
         </div>
     </div>
 
+<!-- FRAME 7 — Jobs Gained by Industry -->
+<!-- ============================== -->
+<div class="frame" data-frame="7">
+
+  <h2 class="story-heading">Which industries gained the most jobs after the recession?</h2>
+
+  <!-- Primary takeaway text (updated dynamically) -->
+  <p class="personal-takeaway" id="recovery-bar-takeaway"></p>
+
+  <p class="story-text">
+    This chart compares how many jobs each industry gained between the start and end of a recovery period.
+  </p>
+
+  <p class="story-prompt">
+    <strong>Choose a recovery period to compare:</strong>
+  </p>
+
+  <div class="choice-row" id="recovery-bar-choice">
+    <button data-rec="2001">2001</button>
+    <button data-rec="2008" class="selected">2008</button>
+    <button data-rec="2020">2020</button>
+  </div>
+
+  <!-- Visualization container -->
+  <div id="recovery-bar-viz" class="horizon-viz"></div>
+
+</div>
+
 </div> <!-- end frame-container -->
 
 <!-- ===================================================== -->
@@ -344,6 +372,7 @@
         <span class="dot" data-dot="4"></span>
         <span class="dot" data-dot="5"></span>
         <span class="dot" data-dot="6"></span>
+        <span class="dot" data-dot="7"></span>
     </div>
 
     <button id="next">Next →</button>
