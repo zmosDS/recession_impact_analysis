@@ -1,4 +1,4 @@
-# The Hidden Shape of Recessions: Industry Employment 1995–2024
+# The Hidden Shape of Recessions: Industry Declines & Recoveries 1995–2024
 
 Interactive explorable explanation of how major U.S. industries lose and regain jobs across the 2001, 2008, and 2020 recessions. The project combines a narrative slideshow with linked visualizations so viewers can compare downturns and recoveries across sectors.
 
