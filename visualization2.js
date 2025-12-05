@@ -8,15 +8,15 @@ let selectedIndustryFrame4 = null;
 let dataLoaded = false;
 
 const RECESSION_BASELINES = {
-  "2001": { id: "2001", label: "2001", year: 2001, month: 1 },
-  "2008": { id: "2008", label: "2008", year: 2007, month: 11 },
-  "2020": { id: "2020", label: "2020", year: 2020, month: 1 }
+  "2001 Dot-com Recession": { id: "2001", label: "2001", year: 2001, month: 1 },
+  "2008 Great Recession": { id: "2008", label: "2008", year: 2007, month: 11 },
+  "2020 COVID-19 Recession": { id: "2020", label: "2020", year: 2020, month: 1 }
 };
 
 const RECESSION_COLORS = {
-  "2001": "#e41a1c",
-  "2008": "#377eb8",
-  "2020": "#4daf4a"
+  "2001 Dot-com Recession": "#e41a1c",
+  "2008 Great Recession": "#377eb8",
+  "2020 COVID-19 Recession": "#4daf4a"
 };
 
 function normalizeName(str) {
@@ -142,7 +142,7 @@ function updateShockRecoveryChart() {
     return;
   }
 
-  const margin = { top: 60, right: 40, bottom: 50, left: 80 };
+  const margin = { top: 60, right: 40, bottom: 90, left: 80 };
   const width = 900 - margin.left - margin.right;
   const height = 450 - margin.top - margin.bottom;
 
@@ -189,11 +189,14 @@ function updateShockRecoveryChart() {
     );
 
   // axes
-  svg.append("g")
+  const xAxis = svg.append("g")
     .attr("transform", `translate(0,${height})`)
     .call(d3.axisBottom(x).tickValues(xTicks));
 
-  svg.append("g").call(d3.axisLeft(y));
+  const yAxis = svg.append("g").call(d3.axisLeft(y));
+
+  xAxis.selectAll("text").attr("font-size", 16);
+  yAxis.selectAll("text").attr("font-size", 16);
 
   // zero line at 100
   svg.append("line")
@@ -211,6 +214,7 @@ function updateShockRecoveryChart() {
     .attr("y", -25)
     .attr("text-anchor", "middle")
     .attr("class", "chart-title")
+    .attr("font-size", 22)
     .text(`${selectedIndustryFrame4}: Shock & Recovery`);
 
   svg.append("text")
@@ -218,6 +222,8 @@ function updateShockRecoveryChart() {
     .attr("y", height + 35)
     .attr("text-anchor", "middle")
     .attr("class", "axis-label")
+    .attr("font-size", 16)
+    .attr("font-weight", "bold")
     .text("Months After Start");
 
   svg.append("text")
@@ -226,6 +232,8 @@ function updateShockRecoveryChart() {
     .attr("y", -55)
     .attr("text-anchor", "middle")
     .attr("class", "axis-label")
+    .attr("font-size", 16)
+    .attr("font-weight", "bold")
     .text("Employment Index (Start = 100)");
 
   // line generator
@@ -234,10 +242,13 @@ function updateShockRecoveryChart() {
     .x(d => x(d.monthAfterStart))
     .y(d => y(d.index));
 
-  // lines + trough dots/labels
+  // lines + trough dots
+  const labelData = [];
+
   seriesByRec.forEach(series => {
     const recId = series[0].recessionId;
     const color = RECESSION_COLORS[recId] || "#333";
+    const shortLabel = RECESSION_BASELINES[recId]?.label || recId;
 
     svg.append("path")
       .datum(series)
@@ -253,57 +264,140 @@ function updateShockRecoveryChart() {
     if (!trough) return;
 
     const loss = 100 - trough.index;
-
-    // Clamp label position so it stays inside chart horizontally
-    const clamp = (val, min, max) =>
-      Math.max(min, Math.min(max, val));
-
-    const xPos = clamp(x(trough.monthAfterStart), 0, width);
-    const yPosDot = y(trough.index);
+    const xDot = x(trough.monthAfterStart);
+    const yDot = y(trough.index);
 
     svg.append("circle")
-      .attr("cx", x(trough.monthAfterStart))
-      .attr("cy", yPosDot)
+      .attr("cx", xDot)
+      .attr("cy", yDot)
       .attr("r", 4)
       .attr("fill", "black");
 
-    const yPosLabel = clamp(yPosDot + 16, 10, height - 5);
-
-    svg.append("text")
-      .attr("x", xPos)
-      .attr("y", yPosLabel)
-      .attr("text-anchor", "middle")
-      .attr("font-size", 12)
-      .attr("font-weight", "bold")
-      .text(
-        `${recId} low: ${trough.index.toFixed(1)} (${Math.abs(loss).toFixed(1)}% job loss)`
-      );
+    labelData.push({
+      recId,
+      text: `${shortLabel} low: ${trough.index.toFixed(1)} (${Math.abs(loss).toFixed(1)}% job loss)`,
+      xDot,
+      yDot
+    });
   });
 
-  // legend
+  // Lay out trough labels so they:
+  // - stay inside the chart area
+  // - avoid overlapping each other (especially when points coincide)
+  // - stay as close under their dot as possible
+  const placedBoxes = [];
+
+  const boxesOverlap = (a, b) => !(
+    a.x + a.width <= b.x ||
+    b.x + b.width <= a.x ||
+    a.y + a.height <= b.y ||
+    b.y + b.height <= a.y
+  );
+
+  const edgeBuffer = 90;
+  const yMinLabel = 12;
+  const yMaxLabel = height - 6;
+
+  // Detect labels whose troughs are at effectively the same spot
+  // so we can stack them cleanly instead of letting them collide.
+  const sameSpotCounts = {};
+  labelData.forEach(label => {
+    const key = `${Math.round(label.xDot)}_${Math.round(label.yDot)}`;
+    const idx = sameSpotCounts[key] || 0;
+    sameSpotCounts[key] = idx + 1;
+    label.sameSpotIndex = idx;
+  });
+
+  labelData.forEach(label => {
+    // Decide horizontal anchoring based on dot position so
+    // labels near edges extend into the chart, not off-screen.
+    let anchor = "middle";
+    let xBase = label.xDot;
+
+    if (label.xDot < edgeBuffer) {
+      anchor = "start";              // text goes to the right
+      xBase = Math.max(label.xDot, 4);
+    } else if (label.xDot > width - edgeBuffer) {
+      anchor = "end";                // text goes to the left
+      xBase = Math.min(label.xDot, width - 4);
+    }
+
+    let targetX = xBase;
+    const baseY = Math.min(Math.max(label.yDot + 18, yMinLabel), yMaxLabel);
+    // If multiple troughs share (almost) the same position,
+    // start them already vertically offset to form a tidy stack.
+    let targetY = baseY + label.sameSpotIndex * 16;
+
+    const textSel = svg.append("text")
+      .attr("x", targetX)
+      .attr("y", targetY)
+      .attr("text-anchor", anchor)
+      .attr("font-size", 12)
+      .attr("font-weight", "bold")
+      .text(label.text);
+
+    const updateY = yPos => {
+      textSel.attr("y", yPos);
+      return textSel.node().getBBox();
+    };
+
+    let bbox = textSel.node().getBBox();
+
+    // Nudge the label up/down only if it overlaps previous labels.
+    const step = bbox.height + 2;
+    let attempts = 0;
+    const maxAttempts = 6;
+
+    const hasCollision = () =>
+      placedBoxes.some(existing => boxesOverlap(bbox, existing));
+
+    while (hasCollision() && attempts < maxAttempts) {
+      attempts += 1;
+
+      // Prefer moving downward; if we would leave the chart,
+      // move upward instead.
+      let candidateY = targetY + step;
+      if (candidateY + bbox.height > yMaxLabel) {
+        candidateY = targetY - step;
+      }
+
+      targetY = Math.min(Math.max(candidateY, yMinLabel), yMaxLabel);
+      bbox = updateY(targetY);
+    }
+
+    placedBoxes.push(bbox);
+  });
+
+  // legend (under x-axis title, laid out horizontally)
+  const legendItems = Object.keys(RECESSION_BASELINES);
+  const legendItemWidth = 220;
+  const legendTotalWidth = legendItems.length * legendItemWidth;
+  const legendStartX = (width - legendTotalWidth) / 2;
+
   const legend = svg.append("g")
     .attr("class", "legend")
-    .attr("transform", `translate(${width - 120}, 5)`);
-
-  const legendItems = Object.keys(RECESSION_BASELINES);
+    .attr("transform", `translate(${legendStartX}, ${height + 60})`);
 
   legendItems.forEach((id, i) => {
     const g = legend.append("g")
-      .attr("transform", `translate(0, ${i * 22})`);
+      .attr("transform", `translate(${i * legendItemWidth}, 0)`);
 
     g.append("line")
       .attr("x1", 0)
-      .attr("x2", 24)
-      .attr("y1", 8)
-      .attr("y2", 8)
+      .attr("x2", 48)
+      .attr("y1", 0)
+      .attr("y2", 0)
       .attr("stroke", RECESSION_COLORS[id])
-      .attr("stroke-width", 3);
+      .attr("stroke-width", 6);
+
+    const labelText = String(id).replace(/^\d{4}\s+/, "");
 
     g.append("text")
-      .attr("x", 30)
-      .attr("y", 10)
-      .attr("font-size", 12)
-      .text(id);
+      .attr("x", 56)
+      .attr("y", 4)
+      .attr("font-size", 16)
+      .attr("alignment-baseline", "middle")
+      .text(labelText);
   });
 }
 
@@ -313,13 +407,13 @@ function updateShockRecoveryChart() {
 const LANDING_LABELS = [
   "2001 Dot-com",
   "2008 Great Recession",
-  "2020 Covid-19"
+  "2020 COVID-19"
 ];
 
 const LABEL_TO_REC_ID = {
-  "2001 Dot-com": "2001",
-  "2008 Great Recession": "2008",
-  "2020 Covid-19": "2020"
+  "2001 Dot-com": "2001 Dot-com Recession",
+  "2008 Great Recession": "2008 Great Recession",
+  "2020 COVID-19": "2020 COVID-19 Recession"
 };
 
 function computeLandingMetricsForIndustry(industryName) {
@@ -440,12 +534,17 @@ function updateLandingBarChart() {
         .tickFormat("")
     );
 
-  svg
+  const xAxis = svg
     .append("g")
     .attr("transform", `translate(0,${height})`)
     .call(d3.axisBottom(x));
 
-  svg.append("g").call(d3.axisLeft(y));
+  const yAxis = svg.append("g").call(d3.axisLeft(y));
+
+  xAxis.selectAll("text")
+    .attr("font-size", 16)
+    .attr("font-weight", "bold");
+  yAxis.selectAll("text").attr("font-size", 16);
 
   svg
     .append("line")
@@ -462,15 +561,8 @@ function updateLandingBarChart() {
     .attr("y", -25)
     .attr("text-anchor", "middle")
     .attr("class", "chart-title")
+    .attr("font-size", 24)
     .text(`${selectedIndustryFrame4}: 2 Years Later`);
-
-  svg
-    .append("text")
-    .attr("x", width / 2)
-    .attr("y", height + 40)
-    .attr("text-anchor", "middle")
-    .attr("class", "axis-label")
-    .text("Recession");
 
   svg
     .append("text")
@@ -479,6 +571,8 @@ function updateLandingBarChart() {
     .attr("y", -55)
     .attr("text-anchor", "middle")
     .attr("class", "axis-label")
+    .attr("font-size", 18)
+    .attr("font-weight", "bold")
     .text("Jobs change after 2 years (%)");
 
   svg
@@ -531,30 +625,46 @@ function updateLandingBarChart() {
       infoGroup
         .append("text")
         .attr("x", cx)
-        .attr("y", height + 58)
+        .attr("y", height + 40)
         .attr("text-anchor", "middle")
-        .attr("font-size", 13)
+        .attr("font-size", 14)
         .text("No data");
       return;
     }
 
-    infoGroup
+    const lowestText = infoGroup
       .append("text")
       .attr("x", cx)
-      .attr("y", height + 58)
+      .attr("y", height + 40)
       .attr("text-anchor", "middle")
-      .attr("font-size", 13)
-      .text(`Lowest month: ${m.lowestMonth}`);
+      .attr("font-size", 15);
 
-    infoGroup
+    lowestText
+      .append("tspan")
+      .attr("font-weight", "bold")
+      .text("Lowest month: ");
+
+    lowestText
+      .append("tspan")
+      .attr("font-weight", "normal")
+      .text(m.lowestMonth);
+
+    const lossText = infoGroup
       .append("text")
       .attr("x", cx)
-      .attr("y", height + 75)
+      .attr("y", height + 56)
       .attr("text-anchor", "middle")
-      .attr("font-size", 13)
-      .text(
-        `Job loss for worst month: ${m.jobLossLowest.toFixed(1)}%`
-      );
+      .attr("font-size", 15);
+
+    lossText
+      .append("tspan")
+      .attr("font-weight", "bold")
+      .text("Job loss for worst month: ");
+
+    lossText
+      .append("tspan")
+      .attr("font-weight", "normal")
+      .text(`${m.jobLossLowest.toFixed(1)}%`);
   });
 }
 // ------------------------
