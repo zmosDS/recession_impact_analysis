@@ -71,6 +71,10 @@ window.addEventListener("DOMContentLoaded", () => {
     console.log(`Entered frame ${frameIndex}`);
 
     switch (frameIndex) {
+      case 1:
+        renderViz1();
+        break;
+      
       case 6: // Last frame (Recovery comparison bar chart)
         renderRecoveryBarViz();
         break;
