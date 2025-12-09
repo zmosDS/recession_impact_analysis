@@ -233,9 +233,13 @@ h1 {
     opacity: 1;
 }
 
+/* ========================================================= */
+/* Controls bar layout (Back | Dots | Next) */
+/* ========================================================= */
+
 #controls {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between;   /* back left, dots center, next right */
     align-items: center;
     margin-top: 3rem;
     padding-top: 1.5rem;
@@ -244,7 +248,7 @@ h1 {
     z-index: 20;
 }
 
-#controls button {
+#back, #next {
     padding: 0.6rem 1.4rem;
     font-size: 1rem;
     cursor: pointer;
@@ -253,11 +257,16 @@ h1 {
     background: #fafafa;
 }
 
-#controls button:hover {
+#back:hover,
+#next:hover {
     background: #eee;
 }
 
+/* center dots properly */
 #dots {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     gap: 0.5rem;
 }
@@ -274,6 +283,44 @@ h1 {
 .dot.active {
     background: #222;
 }
+
+#return-start {
+    padding: 0.6rem 1.4rem;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 6px;
+    border: 1px solid #666;
+    background: #fafafa;
+}
+
+#return-start:hover {
+    background: #eee;
+}
+
+
+
+/* Responsive layout: stack buttons and center dots */
+@media (max-width: 600px) {
+
+    #controls {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    #dots {
+        position: static;
+        transform: none;
+        justify-content: center;
+    }
+
+    #back, #next {
+        width: 100%;
+        justify-self: center;
+    }
+}
+
 
 .wrap-up-controls {
     margin-top: 2rem;
@@ -483,11 +530,11 @@ h1 {
 
 .title-authors {
     position: absolute;
-    bottom: 2.5rem;        /* distance from bottom of the frame */
+    bottom: 1.5rem;        /* distance from bottom of the frame */
     width: 100%;
     text-align: center;
     font-size: 1rem;
-    color: #666;
+    color: #9c9b9b;
     letter-spacing: 0.3px;
     opacity: 0.9;
 }
@@ -545,6 +592,57 @@ h1 {
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
+}
+
+/* Title frame hook text */
+.title-hook {
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: #444;
+    max-width: 55ch;
+    line-height: 1.55;
+    margin: 1rem auto 2.2rem auto;
+    text-align: center;
+    opacity: 0.92;
+}
+
+.title-hook strong {
+    color: #111;
+    font-weight: 600;
+}
+
+/* Fade-in core */
+.fade-step {
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeUp 0.8s ease forwards;
+}
+
+.fade-1 { animation-delay: 0.0s; }
+.fade-2 { animation-delay: 0.0s; }
+.fade-3 { animation-delay: 1.6s; }
+.fade-4 { animation-delay: 0.0s; }
+.fade-5 { animation-delay: 4.0s; }
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* FIXED: fade first at 4.0s, jiggle at 4.8s */
+.jiggle {
+    animation:
+        fadeUp 0.8s ease forwards 4.0s,
+        pulse-jiggle-once 0.8s ease 4.8s;
+}
+
+@keyframes pulse-jiggle-once {
+    0%   { transform: scale(1) translateY(0); }
+    20%  { transform: scale(1.04) translateY(-2px); }
+    40%  { transform: scale(1.02) translateY(1px); }
+    60%  { transform: scale(1.04) translateY(-1px); }
+    80%  { transform: scale(1.02) translateY(1px); }
+    100% { transform: scale(1) translateY(0); }
 }
 
 
