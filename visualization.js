@@ -126,9 +126,27 @@ function loadViz1() {
 }
 
 function renderViz1(data) {
-  const margin = { top: 60, right: 40, bottom: 50, left: 70 };
-  const width = 900 - margin.left - margin.right;
-  const height = 500 - margin.top - margin.bottom;
+  // Get dynamic container size
+  const containerNode = document.querySelector(".frame1-chart");
+
+  // fallback if display:none (frame not active yet)
+  let containerWidth = containerNode.clientWidth;
+  let containerHeight = containerNode.clientHeight;
+
+  // If frame is hidden, temporarily measure by forcing visibility
+  if (containerWidth === 0) {
+      const oldDisplay = containerNode.style.display;
+      containerNode.style.display = "block";
+      containerWidth = containerNode.clientWidth;
+      containerHeight = containerNode.clientHeight;
+      containerNode.style.display = oldDisplay;
+  }
+
+  // apply margins
+const margin = { top: 60, right: 40, bottom: 50, left: 70 };
+const width = 900 - margin.left - margin.right;
+const height = 500 - margin.top - margin.bottom;
+
 
   const container = d3.select("#yoy-chart");
   container.selectAll("*").remove();
@@ -157,8 +175,9 @@ function renderViz1(data) {
 
   const svg = container
     .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+    .attr("width", "100%")
+    .attr("height", "100%")
+    .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
     .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 

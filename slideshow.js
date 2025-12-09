@@ -6,7 +6,9 @@ window.addEventListener("DOMContentLoaded", () => {
   const frames = Array.from(document.querySelectorAll(".frame"));
   const dots = Array.from(document.querySelectorAll(".dot"));
   const nextBtn = document.getElementById("next");
+  const backBtn = document.getElementById("back");
   const restartButton = document.getElementById("restart-button");
+  const returnStartBtn = document.getElementById("return-start");
 
   let currentFrame = 0; // start at first frame
 
@@ -40,52 +42,42 @@ window.addEventListener("DOMContentLoaded", () => {
   // Frame-specific behavior
   // --------------------------------------------------------
   function onFrameEnter(frameIndex) {
-    
-    // Hide Next on the first slide (frame 0) and the last slide (frame 6)
-    if (nextBtn) {
+
+    // Determine first/last frame for ALL controls
     const isFirst = frameIndex === 0;
     const isLast = frameIndex === frames.length - 1;
 
-    nextBtn.style.display = (isFirst || isLast) ? "none" : "inline-block";
-}
-    
+    // Show/hide NEXT button
+    if (nextBtn) {
+      nextBtn.style.display = (isFirst || isLast) ? "none" : "inline-block";
+    }
+
+    // Show/hide RETURN TO START button
+    if (returnStartBtn) {
+      returnStartBtn.style.display = isLast ? "inline-block" : "none";
+    }
+
+    // Show/hide BACK button
+    if (backBtn) {
+      backBtn.style.visibility = isFirst ? "hidden" : "visible";
+    }
+
+    // Hide dots on frame 0
+    const dotsContainer = document.getElementById("dots");
+    if (dotsContainer) {
+      dotsContainer.style.visibility = isFirst ? "hidden" : "visible";
+    }
+
     console.log(`Entered frame ${frameIndex}`);
 
     switch (frameIndex) {
-
-        case 0:
-            // Frame 0: Title slide
-            break;
-
-        case 1:
-            // Frame 1: YOY employment chart
-            break;
-
-        case 2:
-            // Frame 2: Recession profile visualization
-            break;
-
-        case 3:
-            // Frame 3: Industry grid selection
-            break;
-
-        case 4:
-            // Frame 4: Industry normalized view
-            break;
-
-        case 5:
-            // Frame 5: Recovery comparison
-            break;
-
-        case 6:
-            // Frame 6: Personalized wrap-up
-            fillFinalTakeaway();
-            break;
-
-         case 7:
-            // NEW: render horizon-style recovery comparison
-            renderRecoveryBarViz();
-            break;
+      case 1:
+        renderViz1();
+        break;
+      
+      case 6: // Last frame (Recovery comparison bar chart)
+        renderRecoveryBarViz();
+        break;
     }
   }
 
@@ -94,12 +86,33 @@ window.addEventListener("DOMContentLoaded", () => {
   // --------------------------------------------------------
   if (nextBtn) {
     nextBtn.addEventListener("click", () => {
+
+      // Prevent leaving Frame 3 until industry is chosen
+      if (currentFrame === 3) {
+        const selectedIndustry = document.querySelector(".industry-btn.selected");
+        if (!selectedIndustry) {
+          alert("Please select an industry before continuing.");
+          return;
+        }
+      }
+
+      // Advance normally
       if (currentFrame < frames.length - 1) {
         showFrame(currentFrame + 1);
       }
     });
   }
 
+  // --------------------------------------------------------
+  // Back button listener
+  // --------------------------------------------------------
+  if (backBtn) {
+    backBtn.addEventListener("click", () => {
+      if (currentFrame > 0) {
+        showFrame(currentFrame - 1);
+      }
+    });
+  }
 
   // --------------------------------------------------------
   // Dot click navigation
@@ -116,7 +129,7 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   // --------------------------------------------------------
-  // Keyboard arrow navigation
+  // Keyboard navigation
   // --------------------------------------------------------
   document.addEventListener("keydown", e => {
     if (e.key === "ArrowRight" && nextBtn) {
@@ -125,44 +138,39 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   // --------------------------------------------------------
-  // Restart button → go back to INDUSTRY SELECTION (Frame 2)
+  // Restart button → go back to Industry Selection (Frame 3)
   // --------------------------------------------------------
   if (restartButton) {
     restartButton.addEventListener("click", () => {
-      // Frame index 3 = industry selection
       showFrame(3);
     });
   }
 
-    // ----------------------------------------------------------
-    // Start Exploring button (go from Frame 0 → Frame 1)
-    // ----------------------------------------------------------
-    const startButton = document.getElementById("start-exploring");
-
-    if (startButton) {
-    startButton.addEventListener("click", () => {
-        showFrame(1); // first real content frame
-     });
-    }
-
-
   // --------------------------------------------------------
-  // Personalized takeaway placeholder
+  // Return-to-Start button → go back to Frame 0
   // --------------------------------------------------------
-  function fillFinalTakeaway() {
-    const takeawayEl = document.getElementById("final-personal-takeaway");
-    if (!takeawayEl) return;
-
-    // Example text
-    takeawayEl.textContent =
-      "Based on what you explored, your industry shows a unique recovery path. " +
-      "Some sectors regained strength quickly, while others rebuilt slowly — " +
-      "and yours carries a pattern shaped by both history and resilience.";
+  if (returnStartBtn) {
+    returnStartBtn.addEventListener("click", () => {
+      showFrame(0);
+    });
   }
 
   // --------------------------------------------------------
-  // Start the slideshow
+  // Start Exploring button on Frame 0
+  // --------------------------------------------------------
+  const startButton = document.getElementById("start-exploring");
+
+  if (startButton) {
+    startButton.addEventListener("click", () => {
+      showFrame(1);
+    });
+  }
+
+  // --------------------------------------------------------
+  // Start on Frame 0
   // --------------------------------------------------------
   showFrame(0);
+
 });
+
 

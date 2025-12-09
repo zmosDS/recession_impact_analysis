@@ -30,21 +30,30 @@
     <div class="frame" data-frame="0">
         <div class="title-slide">
 
-            <h1 class="main-title">The Hidden Shape of Recessions</h1>
+            <h1 class="main-title fade-step fade-1">
+                The Hidden Shape of Recessions
+            </h1>
 
-            <p class="subtitle">
+            <p class="subtitle fade-step fade-2">
                 Industry Declines & Recoveries<br>1995–2024
             </p>
 
-            <button id="start-exploring">Start Exploring →</button>
+            <p class="title-hook fade-step fade-3">
+                You probably lived through at least one recession…<br>
+                <strong>but could you recognize it just by the shape it left behind?</strong>
+            </p>
 
-            <div class="title-authors">
+            <div class="title-authors fade-step fade-4">
                 <p>An explorable explanation by Jillian O’Neel, Zack Mosley, & Alex Hayslip</p>
             </div>
 
+            <button id="start-exploring" class="fade-step fade-5 jiggle">
+                Start Exploring →
+            </button>
 
         </div>
     </div>
+
 
 
     <!-- ============================== -->
@@ -296,41 +305,10 @@
 
         <p class="personal-takeaway" id="personal-takeaway"></p>
     </div>
-
-    <!-- ============================== -->
-    <!-- FRAME 6 — Personalized Wrap-up -->
-    <!-- ============================== -->
-    <div class="frame" data-frame="6">
-        <h2 class="story-heading">Your Industry's Story</h2>
-
-        <p class="story-text">
-            Every recession leaves a different mark — and the path your industry takes afterward 
-            depends on the people, technologies, and choices that shape it.
-        </p>
-
-                    <!-- Buttons for Recovery Period -->
-            <p class="story-prompt">
-                <strong>Which recession recovery period do you want to see?</strong>
-            </p>
-            <div class="choice-row" id="recovery-choice">
-                <button data-rec="2001">2001</button>
-                <button data-rec="2008">2008</button>
-                <button data-rec="2020">2020</button>
-            </div>
-
-        <p class="personal-takeaway" id="final-personal-takeaway"></p>
-
-        <div id="final-viz" class="viz-placeholder"></div>
-
-        <div class="wrap-up-controls">
-            <p class="wrap-up-question"><strong>Would you like to explore another industry?</strong></p>
-            <button id="restart-button">Choose Another Industry</button>
-        </div>
-    </div>
-
-<!-- FRAME 7 — Jobs Gained by Industry -->
 <!-- ============================== -->
-<div class="frame" data-frame="7">
+<!-- FRAME 6 — Jobs Gained by Industry -->
+<!-- ============================== -->
+<div class="frame" data-frame="6">
 
   <h2 class="story-heading">Which industries gained the most jobs after the recession?</h2>
 
@@ -364,6 +342,8 @@
 
 <div id="controls">
 
+    <button id="back">← Back</button>
+
     <div id="dots">
         <span class="dot" data-dot="0"></span>
         <span class="dot" data-dot="1"></span>
@@ -372,11 +352,15 @@
         <span class="dot" data-dot="4"></span>
         <span class="dot" data-dot="5"></span>
         <span class="dot" data-dot="6"></span>
-        <span class="dot" data-dot="7"></span>
     </div>
 
     <button id="next">Next →</button>
+
+    <button id="return-start" style="display:none;">Return to Start</button>
+
+
 </div>
+
 
 
     <!-- ===================================================== -->
