@@ -639,5 +639,27 @@ h1 {
     100% { transform: scale(1) translateY(0); }
 }
 
+/* Frame 6 Layout */
+.frame6-layout {
+    display: grid;
+    grid-template-columns: 1fr 260px; /* chart left, sidebar right */
+    gap: 2rem;
+    margin-top: 1.5rem;
+    align-items: start;
+}
+
+.frame6-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Optional: stack buttons vertically and make them the same width */
+.frame6-sidebar .choice-row button {
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+
+
 
 

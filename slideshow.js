@@ -147,11 +147,11 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   // --------------------------------------------------------
-  // Return-to-Start button → go back to Frame 0
+  // Return-to-Start button → go back to Frame 3
   // --------------------------------------------------------
   if (returnStartBtn) {
     returnStartBtn.addEventListener("click", () => {
-      showFrame(0);
+      showFrame(3);
     });
   }
 

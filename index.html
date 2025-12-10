@@ -297,8 +297,6 @@
         <h2 class="story-heading">Recovery reshapes industries.</h2>
         <p class="story-text">
             After each recession ends, industries settle into new trajectories. 
-            Some reinvent themselves and grow beyond pre-recession levels; 
-            others never recover.
         </p>
 
         <div id="industry-landing-chart"></div>
@@ -310,29 +308,40 @@
 <!-- ============================== -->
 <div class="frame" data-frame="6">
 
-  <h2 class="story-heading">Which industries gained the most jobs after the recession?</h2>
-
-  <!-- Primary takeaway text (updated dynamically) -->
-  <p class="personal-takeaway" id="recovery-bar-takeaway"></p>
+  <h2 class="story-heading">The “feel” of a recession depends entirely on your point-of-view.</h2>
 
   <p class="story-text">
-    This chart compares how many jobs each industry gained between the start and end of a recovery period.
+    Post-recession, some industries reinvent themselves and grow beyond pre-recession levels while others never recover.
   </p>
 
-  <p class="story-prompt">
-    <strong>Choose a recovery period to compare:</strong>
-  </p>
+  <!-- TWO-COLUMN LAYOUT -->
+  <div class="frame6-layout">
 
-  <div class="choice-row" id="recovery-bar-choice">
-    <button data-rec="2001">2001</button>
-    <button data-rec="2008" class="selected">2008</button>
-    <button data-rec="2020">2020</button>
+      <!-- LEFT SIDE — Bar Chart -->
+      <div id="recovery-bar-viz" class="horizon-viz"></div>
+
+      <!-- RIGHT SIDE — Buttons + Takeaway -->
+      <div class="frame6-sidebar">
+
+          <p class="story-prompt">
+              <strong>Recession Year</strong>
+          </p>
+
+          <div class="choice-row" id="recovery-bar-choice">
+              <button data-rec="2001" class="selected">2001</button>
+              <button data-rec="2008">2008</button>
+              <button data-rec="2020">2020</button>
+          </div>
+
+          <!-- Dynamic takeaway (updated via JS) -->
+          <p class="personal-takeaway" id="recovery-bar-takeaway"></p>
+
+      </div>
+
   </div>
 
-  <!-- Visualization container -->
-  <div id="recovery-bar-viz" class="horizon-viz"></div>
-
 </div>
+
 
 </div> <!-- end frame-container -->
 
@@ -356,7 +365,7 @@
 
     <button id="next">Next →</button>
 
-    <button id="return-start" style="display:none;">Return to Start</button>
+    <button id="choose-industry" style="display:none;">Choose a different industry</button>
 
 
 </div>
