@@ -3,7 +3,8 @@
 Interactive explorable explanation of how major U.S. industries lose and regain jobs across the 2001, 2008, and 2020 recessions. The project combines a narrative slideshow with linked visualizations so viewers can compare downturns and recoveries across sectors.
 
 
-**Live demo:** [Explore the Project](https://zmosds.github.io/recession_impact_analysis/)
+[Explore the Project on Github Pages](https://zmosds.github.io/recession_impact_analysis/)
+[Watch a Live Demo](https://www.youtube.com/watch?v=XJ5WO0ZEQrU)
 
 ## Goal
 The goal of this project is to show how recessions affect different parts of the U.S. economy over time, from overall employment to individual industries. By stepping through an explorable story, users can see when jobs were lost, how deep each recession was, and how quickly (or slowly) different sectors recovered.
