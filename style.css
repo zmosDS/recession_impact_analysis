@@ -284,19 +284,6 @@ h1 {
     background: #222;
 }
 
-#return-start {
-    padding: 0.6rem 1.4rem;
-    font-size: 1rem;
-    cursor: pointer;
-    border-radius: 6px;
-    border: 1px solid #666;
-    background: #fafafa;
-}
-
-#return-start:hover {
-    background: #eee;
-}
-
 
 
 /* Responsive layout: stack buttons and center dots */
@@ -660,6 +647,20 @@ h1 {
     margin-bottom: 0.5rem;
 }
 
+#return-start {
+    padding: 0.8rem 1.6rem;
+    font-size: 1.15rem;
+    border-radius: 8px;
+    background: #0077cc;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+#return-start:hover {
+    background: #005fa3;
+}
 
 
 
