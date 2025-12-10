@@ -791,7 +791,6 @@ function loadIndustryStoryData() {
 
 /* =========================================================
    FRAME 3: “BUT: No two recessions behave the same.”
-   SINGLE-SELECT (like Frame 6), NO LEGEND
 ========================================================= */
 
 function updateRecessionProfileViz() {
@@ -931,229 +930,9 @@ function updateRecessionProfileViz() {
     .text("YoY Employment Change (%)");
 }
 
+
 /* =========================================================
-   FINAL FRAME (Frame 6): “Your Industry's Story”
-========================================================= */
-function updateFinalIndustryStory() {
-  const finalBoxEl = document.getElementById("final-viz");
-  const takeawayBox = document.getElementById("final-personal-takeaway");
-  if (!finalBoxEl || !takeawayBox) return;
-
-  const finalBox = d3.select(finalBoxEl);
-  finalBox.selectAll("*").remove();
-
-  if (!selectedIndustry) {
-    finalBoxEl.innerHTML =
-      "<p>Select an industry earlier in the story to see its recession path here.</p>";
-    takeawayBox.textContent = "";
-    return;
-  }
-
-  if (!selectedRecoveryId) {
-    finalBoxEl.innerHTML =
-      `<p>Now choose a recession recovery period above to see how <strong>${selectedIndustry}</strong> moved through it.</p>`;
-    takeawayBox.textContent = "";
-    return;
-  }
-
-  if (!industryRows || industryRows.length === 0) {
-    finalBoxEl.innerHTML = "<p>Loading employment data… try again in a moment.</p>";
-    takeawayBox.textContent = "";
-    return;
-  }
-
-  const recDef = INDUSTRY_RECOVERIES.find(r => r.id === selectedRecoveryId);
-  if (!recDef) {
-    finalBoxEl.innerHTML = "<p>Sorry, that recovery window isn’t defined.</p>";
-    takeawayBox.textContent = "";
-    return;
-  }
-
-  const rows = getIndustryRowsForKey(selectedIndustry);
-  if (rows.length === 0) {
-    finalBoxEl.innerHTML =
-      `<p>No data available for <strong>${selectedIndustry}</strong> in this dataset.</p>`;
-    takeawayBox.textContent = "";
-    return;
-  }
-
-  rows.sort((a, b) => d3.ascending(a.t, b.t));
-
-  const startT = ym(recDef.startYear, recDef.startMonth);
-  const endT = ym(recDef.endYear, recDef.endMonth);
-
-  const windowRows = rows
-    .filter(r => r.t >= startT && r.t <= endT && !isNaN(r.yoy_change))
-    .map(r => {
-      const monthsSinceStart =
-        (r.year - recDef.startYear) * 12 + (r.month - recDef.startMonth);
-      return { ...r, monthsSinceStart };
-    });
-
-  if (windowRows.length === 0) {
-    finalBoxEl.innerHTML =
-      `<p>No year-over-year data to plot for <strong>${selectedIndustry}</strong> in this recovery window.</p>`;
-    takeawayBox.textContent = "";
-    return;
-  }
-
-  const baseline = windowRows[0];
-  const endPoint = windowRows[windowRows.length - 1];
-
-  const startRate = baseline.yoy_change;
-  const endRate = endPoint.yoy_change;
-  const change = endRate - startRate;
-
-  const yoyFmt = v => `${fmtPct(v)}%`;
-
-  const margin = { top: 85, right: 10, bottom: 60, left: 70 };
-  const boxWidth = finalBoxEl.clientWidth || 900;
-  const width = boxWidth - margin.left - margin.right;
-  const height = 390;
-
-  const svg = finalBox
-    .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom);
-
-  const g = svg.append("g")
-    .attr("transform", `translate(${margin.left},${margin.top})`);
-
-  const maxMonth = d3.max(windowRows, d => d.monthsSinceStart);
-  const x = d3.scaleLinear()
-    .domain([0, maxMonth])
-    .range([0, width]);
-
-  const [yMinRaw, yMaxRaw] = d3.extent(windowRows, d => d.yoy_change);
-  const pad = 5;
-  const y = d3.scaleLinear()
-    .domain([yMinRaw - pad, yMaxRaw + pad])
-    .range([height, 0]);
-
-  const line = d3.line()
-    .defined(d => !isNaN(d.yoy_change))
-    .x(d => x(d.monthsSinceStart))
-    .y(d => y(d.yoy_change));
-
-  // --------------------------------------------------
-  // GRID (matching Frame 2 styling via .x-grid/.y-grid)
-  // --------------------------------------------------
-  const step = 6;
-  const xTicks = d3.range(0, maxMonth + 1, step);
-  const yTicks = y.ticks(6);
-
-  g.append("g")
-    .attr("class", "x-grid")
-    .attr("transform", `translate(0,${height})`)
-    .call(
-      d3.axisBottom(x)
-        .tickValues(xTicks)
-        .tickSize(-height)
-        .tickFormat("")
-    );
-
-  g.append("g")
-    .attr("class", "y-grid")
-    .call(
-      d3.axisLeft(y)
-        .tickValues(yTicks)
-        .tickSize(-width)
-        .tickFormat("")
-    );
-
-  // Zero line (same class as other frames)
-  g.append("line")
-    .attr("class", "zero-line")
-    .attr("x1", 0)
-    .attr("x2", width)
-    .attr("y1", y(0))
-    .attr("y2", y(0));
-
-  // Main line
-  g.append("path")
-    .datum(windowRows)
-    .attr("class", "industry-line")
-    .attr("fill", "none")
-    .attr("stroke", "#0077CC")
-    .attr("stroke-width", 2)
-    .attr("d", line);
-
-  // Dots
-  g.selectAll(".recovery-dot")
-    .data(windowRows)
-    .enter()
-    .append("circle")
-    .attr("class", "recovery-dot")
-    .attr("r", 3)
-    .attr("cx", d => x(d.monthsSinceStart))
-    .attr("cy", d => y(d.yoy_change));
-
-  // Axes
- const xAxis = d3.axisBottom(x)
-  .tickValues(xTicks);
-
-const yAxis = d3.axisLeft(y)
-  .ticks(6)
-  .tickFormat(d => `${d}%`);
-
-// X axis
-const xAxisG = g.append("g")
-  .attr("transform", `translate(0,${height})`)
-  .call(xAxis);
-
-// Y axis
-const yAxisG = g.append("g")
-  .call(yAxis);
-
-// 🔹 Make tick labels larger + match font
-xAxisG.selectAll("text")
-  .style("font-size", "0.9rem")   // bump this up if you want bigger
-  .style("font-family", "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif");
-
-yAxisG.selectAll("text")
-  .style("font-size", "0.9rem")
-  .style("font-family", "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif");
-
-  const startLabel = `${monthNames[recDef.startMonth - 1]} ${recDef.startYear}`;
-  const endLabel = `${monthNames[recDef.endMonth - 1]} ${recDef.endYear}`;
-
-  // Title
-  g.append("text")
-    .attr("x", width / 2)
-    .attr("y", -25)
-    .attr("text-anchor", "middle")
-    .attr("class", "chart-title")
-    .text(
-      `${selectedIndustry}: Year-Over-Year Employment Change During Recovery (${startLabel} – ${endLabel})`
-    );
-
-  // X axis label (already had class)
-  g.append("text")
-    .attr("x", width / 2)
-    .attr("y", height + 50)
-    .attr("text-anchor", "middle")
-    .attr("class", "axis-label")
-    .text("Months After Recovery Period Started");
-
-  // Y axis label — NOW with .axis-label class to match Frame 2
-  g.append("text")
-    .attr("transform", "rotate(-90)")
-    .attr("x", -height / 2)
-    .attr("y", -60)
-    .attr("text-anchor", "middle")
-    .attr("class", "axis-label")
-    .text("YoY Employment Change (%)");
-
-  let verb = "changed";
-  if (change > 0.5) verb = "strengthened";
-  else if (change < -0.5) verb = "softened";
-
-  takeawayBox.textContent =
-    `In ${selectedIndustry}, employment ${verb} over this recovery period. ` +
-    `Between ${startLabel} and ${endLabel}, year-over-year job growth moved from ${yoyFmt(startRate)} to ${yoyFmt(endRate)}.`;
-}
-/* =========================================================
-   FRAME 7: Bar chart — Jobs gained by industry
+   FRAME 6: Bar chart — Jobs gained by industry
 ========================================================= */
 function renderRecoveryBarViz(recIdOverride = null) {
   const containerEl = document.getElementById("recovery-bar-viz");
@@ -1166,11 +945,9 @@ function renderRecoveryBarViz(recIdOverride = null) {
   container.selectAll("*").remove();
 
   if (!industryRows || industryRows.length === 0) {
-    containerEl.innerHTML = "<p>Loading industry data…</p>";
+    containerEl.innerHTML = "<p>Choose a recession --></p>";
     return;
   }
-
-  // Use the same recovery windows as Frame 6
   const activeRecId = recIdOverride || "2008";
   const recDef = INDUSTRY_RECOVERIES.find(r => r.id === activeRecId);
   if (!recDef) {
@@ -1469,10 +1246,13 @@ recoveryButtons.forEach(btn => {
   });
 });
 
-// ---------- Frame 7 – recovery bar buttons ----------
+// ---------- Frame 6 – recovery bar buttons ----------
+
 const recoveryBarButtons = Array.from(
   document.querySelectorAll("#recovery-bar-choice button")
 );
+
+renderRecoveryBarViz(2001);
 
 recoveryBarButtons.forEach(btn => {
   btn.addEventListener("click", () => {
